@@ -1,0 +1,157 @@
+import { Routes, Route, Link, useLocation } from "react-router-dom";
+import { FiHome, FiMenu, FiX, FiFileText, FiPrinter } from "react-icons/fi";
+import { FaUsers, FaClipboardList } from "react-icons/fa";
+import { VscSignOut } from "react-icons/vsc";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import toast from "react-hot-toast";
+
+// import HomePage from "./admin/HomePage.jsx";
+import ViewJobs from "./admin/ViewJobs.jsx";
+// import UsersPage from "./admin/UsersPage.jsx";
+// import ReportPage from "./admin/ReportPage.jsx";
+import CreateAdminAccount from "./admin/CreateAdminAccount.jsx";
+
+export default function AdminPage() {
+  const location = useLocation();
+  const path = location.pathname;
+  const [status, setStatus] = useState("loading");
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setStatus("unauthenticated");
+      window.location.href = "/";
+    } else {
+      axios
+        .get(import.meta.env.VITE_BACKEND_URL + "/api/user/me", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((response) => {
+          if (response.data.role !== "admin") {
+            setStatus("unauthorized");
+            toast.error("You are not authorized to access this page");
+            window.location.href = "/home";
+          } else {
+            setStatus("authenticated");
+          }
+        })
+        .catch(() => {
+          setStatus("unauthenticated");
+          toast.error("You are not authenticated, please login");
+          window.location.href = "/";
+        });
+    }
+  }, [status]);
+
+  const handleSignOut = () => {
+    localStorage.removeItem("token");
+    window.location.href = "/login";
+  };
+
+  return (
+    <div className="w-full h-screen flex bg-gradient-to-br from-[#F8F9FA] via-white to-[#F8F9FA]">
+      {status === "loading" ? (
+        <div className="flex justify-center items-center w-full h-full">
+          <div className="animate-spin rounded-full h-14 w-14 border-4 border-b-transparent border-[#D16BA5]"></div>
+        </div>
+      ) : (
+        <>
+          {/* Mobile top bar */}
+          <div className="md:hidden fixed top-0 left-0 w-full h-16 bg-gradient-to-r from-[#D16BA5] to-[#48CAE4] shadow-lg flex items-center px-4 z-50">
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="p-2 rounded-lg hover:bg-white/20 text-white transition-all"
+            >
+              {menuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+            </button>
+            <h1 className="ml-4 font-bold text-xl text-white tracking-wide">
+              PrintShop Admin
+            </h1>
+            <div className="ml-auto flex items-center space-x-2">
+              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-sm font-bold text-white">
+                {JSON.parse(localStorage.getItem("user"))?.name?.[0] || "A"}
+              </div>
+            </div>
+          </div>
+
+          {/* Sidebar */}
+          <div
+            className={`fixed top-0 left-0 h-full w-[260px] bg-gradient-to-b from-[#2C3E50] to-[#1E1E1E] shadow-xl flex flex-col p-6 pt-20 md:pt-6 transition-transform duration-300 z-40 border-r border-gray-700
+            ${menuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
+          >
+            {/* Profile */}
+            <div className="mb-8 flex flex-col items-center">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-r from-[#D16BA5] to-[#48CAE4] flex items-center justify-center text-2xl font-bold text-white shadow-lg mb-3 ring-4 ring-[#FFD166]/30">
+                {JSON.parse(localStorage.getItem("user"))?.name?.[0] || "A"}
+              </div>
+              <span className="text-lg font-semibold text-white">
+                {JSON.parse(localStorage.getItem("user"))?.name || "Admin"}
+              </span>
+              <span className="text-sm text-[#FFD166] bg-[#FFD166]/10 px-3 py-1 rounded-full mt-1">
+                Administrator
+              </span>
+            </div>
+
+            {/* Navigation */}
+            <nav className="flex-1 space-y-3">
+              <SidebarLink to="/admin/" icon={<FiHome />} label="Home" path={path} />
+              <SidebarLink to="/admin/viewjobs" icon={<FiPrinter />} label="View Jobs" path={path} />
+              <SidebarLink to="/admin/users" icon={<FaUsers />} label="Customers" path={path} />
+              <SidebarLink to="/admin/reports" icon={<FiFileText />} label="Reports" path={path} />
+              <SidebarLink to="/admin/createaccount" icon={<FaClipboardList />} label="Create Account" path={path} />
+            </nav>
+
+            {/* Sign Out */}
+            <div className="pt-4 border-t border-gray-700">
+              <button
+                onClick={handleSignOut}
+                className="flex items-center w-full px-4 py-3 rounded-lg font-semibold text-gray-300 hover:bg-[#D16BA5]/20 hover:text-[#D16BA5] transition-all duration-200"
+              >
+                <VscSignOut className="mr-3 text-[#D16BA5]" /> Sign Out
+              </button>
+            </div>
+          </div>
+
+          {/* Overlay (mobile) */}
+          {menuOpen && (
+            <div
+              className="fixed inset-0 bg-black bg-opacity-40 z-30 md:hidden"
+              onClick={() => setMenuOpen(false)}
+            ></div>
+          )}
+
+          {/* Main content */}
+          <div className="flex-1 bg-[#F8F9FA] rounded-xl p-6 overflow-y-auto md:ml-[260px] mt-16 md:mt-0 shadow-inner">
+            <Routes>
+              <Route path="/" element={<div>Home</div>} />
+              <Route path="/viewjobs" element={<ViewJobs />} />
+              {/* <Route path="/users" element={<UsersPage />} />
+              <Route path="/reports" element={<ReportPage />} /> */}
+              <Route path="/createaccount" element={<CreateAdminAccount />} />
+            </Routes>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function SidebarLink({ to, icon, label, path }) {
+  const isActive = path === to;
+  return (
+    <Link
+      to={to}
+      className={`flex items-center px-4 py-3 rounded-lg font-semibold transition-all duration-200 ${
+        isActive
+          ? "bg-gradient-to-r from-[#D16BA5] to-[#48CAE4] text-white shadow-md"
+          : "text-gray-300 hover:bg-white/10 hover:text-white"
+      }`}
+    >
+      <span className="mr-3">{icon}</span> {label}
+    </Link>
+  );
+}

@@ -152,7 +152,7 @@ export default function LoginPage() {
             <p className="text-[#2C3E50]/80 text-sm">
               Don’t have an account?
               <Link
-                to={"/Register"}
+                to={"/register"}
                 className="ml-2 text-[#48CAE4] hover:text-[#D16BA5] font-semibold transition-colors duration-300 hover:underline"
               >
                 Register
