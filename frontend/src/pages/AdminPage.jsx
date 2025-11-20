@@ -11,6 +11,8 @@ import ViewJobs from "./admin/ViewJobs.jsx";
 // import UsersPage from "./admin/UsersPage.jsx";
 // import ReportPage from "./admin/ReportPage.jsx";
 import CreateAdminAccount from "./admin/CreateAdminAccount.jsx";
+import UsersPage from "./admin/UserPage.jsx";
+import EditUser from "./admin/EditUser.jsx";
 
 export default function AdminPage() {
   const location = useLocation();
@@ -129,9 +131,10 @@ export default function AdminPage() {
             <Routes>
               <Route path="/" element={<div>Home</div>} />
               <Route path="/viewjobs" element={<ViewJobs />} />
-              {/* <Route path="/users" element={<UsersPage />} />
-              <Route path="/reports" element={<ReportPage />} /> */}
+               <Route path="/users" element={<UsersPage />} />
+              {/*<Route path="/reports" element={<ReportPage />} /> */}
               <Route path="/createaccount" element={<CreateAdminAccount />} />
+              <Route path="/edituser" element={<EditUser />} />
             </Routes>
           </div>
         </>

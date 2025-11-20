@@ -1,5 +1,5 @@
 import express from 'express';
-import { changePassword, getCurrentUser, getUser, googleLogin, loginUser, saveUser, sendOTP } from '../controller/userController.js';
+import { changePassword, deleteUser, getAllUsers, getCurrentUser, getUser, googleLogin, loginUser, saveUser, sendOTP, updateUser } from '../controller/userController.js';
 import { get } from 'mongoose';
 
 // Create a new router for user-related routes
@@ -21,4 +21,11 @@ userRouter.post('/sendMail', sendOTP);
 userRouter.post('/changepw', changePassword);
 
 userRouter.get('/me',getUser)
+
+userRouter.delete('/:userID', deleteUser)
+
+userRouter.put('/:userID', updateUser);
+
+userRouter.get('/', getAllUsers)
+
 export default userRouter;
