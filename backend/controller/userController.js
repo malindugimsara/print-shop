@@ -78,8 +78,7 @@ export function loginUser(req, res){
                 // Generate a JWT token
                 const userData ={
                     email: user.email,
-                    firstName: user.firstName,
-                    lastName: user.lastName,
+                    name : user.name,
                     role: user.role,
                     phoneNumber: user.phoneNumber,
                     isDisable: user.isDisable,
@@ -116,8 +115,7 @@ export async function googleLogin(req, res) {
         if (user == null) {
             const newUser = new User({
                 email: response.data.email,
-                firstName: response.data.given_name,
-                lastName: response.data.family_name,
+                name: response.data.name,
                 password: accessToken,
                 isEmailVerified : true
             });
@@ -125,8 +123,7 @@ export async function googleLogin(req, res) {
             
             const userData = {
                 email: response.data.email,
-                firstName: response.data.given_name,
-                lastName: response.data.family_name,
+               name: response.data.name,
                 role: "user",
                 phoneNumber: "Not given",
                 isDisable: false,
@@ -145,8 +142,7 @@ export async function googleLogin(req, res) {
         else {
             const userData = {
                 email: user.email,
-                firstName: user.firstName,
-                lastName: user.lastName,
+                name: user.name,
                 role: user.role,
                 phoneNumber: user.phoneNumber,
                 isDisable: user.isDisable,

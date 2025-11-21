@@ -5,14 +5,15 @@ import { VscSignOut } from "react-icons/vsc";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
-
-// import HomePage from "./admin/HomePage.jsx";
-import ViewJobs from "./admin/ViewJobs.jsx";
-// import UsersPage from "./admin/UsersPage.jsx";
-// import ReportPage from "./admin/ReportPage.jsx";
+import { CiSquarePlus } from "react-icons/ci";
 import CreateAdminAccount from "./admin/CreateAdminAccount.jsx";
 import UsersPage from "./admin/UserPage.jsx";
 import EditUser from "./admin/EditUser.jsx";
+import WelcomeAdmin from "../components/WelcomeAdmin.jsx";
+import Job from "./admin/Job.jsx";
+import AddJob from "./admin/AddJob.jsx";
+import EditJob from "./admin/EditJob.jsx";
+import JobReportPage from "./admin/JobReportPage.jsx";
 
 export default function AdminPage() {
   const location = useLocation();
@@ -101,9 +102,10 @@ export default function AdminPage() {
             {/* Navigation */}
             <nav className="flex-1 space-y-3">
               <SidebarLink to="/admin/" icon={<FiHome />} label="Home" path={path} />
-              <SidebarLink to="/admin/viewjobs" icon={<FiPrinter />} label="View Jobs" path={path} />
-              <SidebarLink to="/admin/users" icon={<FaUsers />} label="Customers" path={path} />
-              <SidebarLink to="/admin/reports" icon={<FiFileText />} label="Reports" path={path} />
+              <SidebarLink to="/admin/addjob" icon={<CiSquarePlus />} label="Add Jobs" path={path} />
+              <SidebarLink to="/admin/viewjob" icon={<FiPrinter />} label="View Jobs" path={path} />
+              <SidebarLink to="/admin/users" icon={<FaUsers />} label="User" path={path} />
+              <SidebarLink to="/admin/report" icon={<FiFileText />} label="Reports" path={path} />
               <SidebarLink to="/admin/createaccount" icon={<FaClipboardList />} label="Create Account" path={path} />
             </nav>
 
@@ -129,12 +131,14 @@ export default function AdminPage() {
           {/* Main content */}
           <div className="flex-1 bg-[#F8F9FA] rounded-xl p-6 overflow-y-auto md:ml-[260px] mt-16 md:mt-0 shadow-inner">
             <Routes>
-              <Route path="/" element={<div>Home</div>} />
-              <Route path="/viewjobs" element={<ViewJobs />} />
-               <Route path="/users" element={<UsersPage />} />
-              {/*<Route path="/reports" element={<ReportPage />} /> */}
+              <Route path="/" element={<WelcomeAdmin />} />
+              <Route path="/addjob" element={<AddJob />} />
+              <Route path="/viewjob" element={<Job />} />
+              <Route path="/users" element={<UsersPage />} />
+              <Route path="/report" element={<JobReportPage />} />
               <Route path="/createaccount" element={<CreateAdminAccount />} />
               <Route path="/edituser" element={<EditUser />} />
+              <Route path="/editjob" element={<EditJob />} />
             </Routes>
           </div>
         </>

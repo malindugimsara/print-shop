@@ -72,7 +72,7 @@ export default function CreateAdminAccount() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-yellow-100 via-red-100 to-pink-100">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-100 via-blue-100 to-pink-100">
             <div className="w-full max-w-md bg-white/90 shadow-2xl rounded-2xl p-8 flex flex-col items-center">
                 <h1 className="text-4xl font-extrabold text-red-700 mb-6 font-sans">Create User Account</h1>
                 <form className="w-full flex flex-col gap-4">
