@@ -2,15 +2,16 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { jwtDecode } from "jwt-decode";
 
-export default function AddJob() {
+
+export default function AddOrder() {
     const [jobID, setJobID] = useState("");
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
     const [details, setDetails] = useState("");
     const [needDate, setNeedDate] = useState("");
-    const [status, setStatus] = useState("");
     const [isGeneratingID, setIsGeneratingID] = useState(true);
     const [showSpinner, setShowSpinner] = useState(false);
 
@@ -18,8 +19,31 @@ export default function AddJob() {
 
     useEffect(() => {
         generateJobID();
+        loadUserDataFromToken();
     }, []);
 
+    // ---------------------------
+    //  Load user data from token
+    // ---------------------------
+    const loadUserDataFromToken = () => {
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) return;
+
+            const decoded = jwtDecode(token);
+
+            setName(decoded.name || "");
+            setEmail(decoded.email || "");
+            setPhoneNumber(decoded.phoneNumber || "");
+
+        } catch (error) {
+            console.error("Token decode error:", error);
+        }
+    };
+
+    // ---------------------------
+    //  Auto-generate Job ID
+    // ---------------------------
     const generateJobID = async () => {
         try {
             const token = localStorage.getItem("token");
@@ -34,7 +58,6 @@ export default function AddJob() {
             );
 
             const existingJobs = response.data;
-
             let highestNumber = 0;
 
             existingJobs.forEach(job => {
@@ -63,11 +86,14 @@ export default function AddJob() {
         }
     };
 
+    // ---------------------------
+    //  Add New Job
+    // ---------------------------
     async function handleAddJob() {
         try {
             setShowSpinner(true);
 
-            if (!jobID || !name || !email || !phoneNumber || !details || !needDate || !status) {
+            if (!jobID || !name || !email || !phoneNumber || !details || !needDate) {
                 toast.error("Please fill in all required fields.");
                 setShowSpinner(false);
                 return;
@@ -80,7 +106,7 @@ export default function AddJob() {
                 phoneNumber,
                 details,
                 needDate,
-                status
+                status: "Pending", // always pending
             };
 
             const token = localStorage.getItem("token");
@@ -97,7 +123,7 @@ export default function AddJob() {
 
             toast.success("Job added successfully!");
             setShowSpinner(false);
-            navigate("/admin/viewjob", { replace: true });
+            navigate("/myorder", { replace: true });
         } catch (error) {
             setShowSpinner(false);
             toast.error(error.response?.data?.message || "Failed to add job.");
@@ -106,10 +132,11 @@ export default function AddJob() {
     }
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-100 to-gray-300">
-            
+        <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-100 to-gray-300 pt-20">
             <div className="w-full max-w-lg shadow-2xl rounded-2xl flex flex-col items-center bg-white p-8">
+
                 <h1 className="text-4xl font-extrabold text-[#2C3E50] mb-8 drop-shadow-lg">Add Job</h1>
+
                 {/* Job ID */}
                 <div className="w-full mb-4">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -118,7 +145,7 @@ export default function AddJob() {
                     <input
                         value={isGeneratingID ? "Generating..." : jobID}
                         readOnly
-                        className="w-full h-12 border border-gray-300 rounded-lg px-4 bg-gray-100 text-gray-600 focus:outline-none cursor-not-allowed"
+                        className="w-full h-12 border border-gray-300 rounded-lg px-4 bg-gray-100 text-gray-600"
                         type="text"
                     />
                 </div>
@@ -126,8 +153,8 @@ export default function AddJob() {
                 {/* Name */}
                 <input
                     value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="w-full h-12 border border-gray-300 rounded-lg px-4 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+                    readOnly
+                    className="w-full h-12 border border-gray-300 rounded-lg px-4 mb-4 bg-gray-100 cursor-not-allowed"
                     placeholder="Name"
                     type="text"
                 />
@@ -135,17 +162,18 @@ export default function AddJob() {
                 {/* Email */}
                 <input
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full h-12 border border-gray-300 rounded-lg px-4 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+                    readOnly
+                    className="w-full h-12 border border-gray-300 rounded-lg px-4 mb-4 bg-gray-100 cursor-not-allowed"
                     placeholder="Email"
                     type="email"
                 />
 
-                {/* phoneNumber */}
-                <textarea
+                {/* Phone Number */}
+                <input
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
-                    className="w-full h-16 border border-gray-300 rounded-lg px-4 py-2 mb-4 resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+                    className="w-full h-16 border border-gray-300 rounded-lg px-4 py-2 mb-4 bg-gray-100 cursor-not-allowed"
+                    type="number"
                     placeholder="Phone Number"
                 />
 
@@ -153,34 +181,32 @@ export default function AddJob() {
                 <textarea
                     value={details}
                     onChange={(e) => setDetails(e.target.value)}
-                    className="w-full h-20 border border-gray-300 rounded-lg px-4 py-2 mb-4 resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+                    className="w-full h-20 border border-gray-300 rounded-lg px-4 py-2 mb-4 resize-none focus:outline-none focus:ring-2 focus:ring-blue-400"
                     placeholder="Details"
                 />
 
                 {/* Need Date */}
-                <input
-                    value={needDate}
-                    onChange={(e) => setNeedDate(e.target.value)}
-                    className="w-full h-12 border border-gray-300 rounded-lg px-4 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
-                    type="date"
-                />
+                <div className="relative w-full mb-4">
+                    <input
+                        type="date"
+                        value={needDate}
+                        onChange={(e) => setNeedDate(e.target.value)}
+                        className="peer w-full h-12 border border-gray-300 rounded-lg px-4 focus:outline-none"
+                    />
+                    <label className="absolute left-4 top-3 px-2 text-gray-500 transition-all duration-200 
+                                    peer-focus:-top-2 peer-focus:text-xs peer-focus:text-blue-500 
+                                    peer-valid:-top-2 peer-valid:text-xs">
+                        Need Date
+                    </label>
+                </div>
 
-                {/* Status */}
-                <select
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value)}
-                    className="w-full h-12 border border-gray-300 rounded-lg px-4 mb-6 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
-                >
-                    <option value="" disabled>Select status</option>
-                    <option value="Pending">Pending</option>
-                    <option value="In Progress">In Progress</option>
-                    <option value="Completed">Completed</option>
-                </select>
+
+                
 
                 {/* Submit */}
                 <button
                     onClick={handleAddJob}
-                    className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg mb-4 transition duration-200 shadow-md"
+                    className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg mb-4 shadow-md"
                     disabled={showSpinner}
                 >
                     {showSpinner ? "Adding..." : "Add Job"}
@@ -189,7 +215,7 @@ export default function AddJob() {
                 {/* Cancel */}
                 <Link
                     to={"/admin/"}
-                    className="w-full h-12 bg-gray-400 hover:bg-gray-500 text-[#1E1E1E] font-semibold rounded-lg flex items-center justify-center transition duration-200 shadow-md"
+                    className="w-full h-12 bg-gray-400 hover:bg-gray-500 text-[#1E1E1E] font-semibold rounded-lg flex items-center justify-center shadow-md"
                 >
                     Cancel
                 </Link>

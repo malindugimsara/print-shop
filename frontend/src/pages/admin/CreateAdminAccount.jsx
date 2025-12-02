@@ -74,7 +74,7 @@ export default function CreateAdminAccount() {
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-100 via-blue-100 to-pink-100">
             <div className="w-full max-w-md bg-white/90 shadow-2xl rounded-2xl p-8 flex flex-col items-center">
-                <h1 className="text-4xl font-extrabold text-red-700 mb-6 font-sans">Create User Account</h1>
+                <h1 className="text-4xl font-extrabold text-[#2C3E50] mb-6 font-sans">Create User Account</h1>
                 <form className="w-full flex flex-col gap-4">
                     <input
                         name="name"
@@ -139,23 +139,25 @@ export default function CreateAdminAccount() {
                     <button
                         type="button"
                         onClick={handleRegister}
-                        className="bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg py-2 mt-2 transition"
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg py-2 mt-2 transition"
                     >
                         Create Account
                     </button>
-                    <button
-                        type="button"
-                        onClick={handleClear}
-                        className="bg-gray-400 hover:bg-gray-500 text-white font-semibold rounded-lg py-2 transition"
-                    >
-                        Clear
-                    </button>
-                    <Link
-                        to={"/admin/"}
-                        className="bg-black hover:bg-gray-800 text-white font-semibold rounded-lg py-2 flex items-center justify-center transition"
-                    >
-                        Cancel
-                    </Link>
+                    <div className="flex justify-between mt-2 gap-4 ">
+                        <button
+                            type="button"
+                            onClick={handleClear}
+                            className="bg-gray-600 hover:bg-gray-500 text-white font-semibold rounded-lg py-2 transition w-1/2 flex items-center justify-center"
+                        >
+                            Clear
+                        </button>
+                        <Link
+                            to={"/admin/"}
+                            className="bg-gray-400 hover:bg-gray-500 text-[#1E1E1E] font-semibold rounded-lg py-2 flex items-center justify-center transition w-1/2 flex items-center justify-center"
+                        >
+                            Cancel
+                        </Link>
+                    </div>
                 </form>
             </div>
         </div>

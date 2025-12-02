@@ -8,12 +8,12 @@ export function createJob(req, res){
         });
         return;
     }
-    if (req.user.role != "admin"){
-        res.status(403).json({
-            message: "You are not authorized to create a job"
-        });
-        return;
-    }
+    // if (req.user.role != "admin"){
+    //     res.status(403).json({
+    //         message: "You are not authorized to create a job"
+    //     });
+    //     return;
+    // }
 
     const job = new Job(req.body);
 
@@ -29,123 +29,145 @@ export function createJob(req, res){
     });
 }
 
-export function getJob(req, res){
-    if (req.user == null) {
-        res.status(403).json({
-            message: "You need to login first"
-        });
-        return;
-    }
-    if (req.user.role != "admin") {
-        res.status(403).json({
-            message: "You are not authorized to view job"
-        });
-        return;
+// export function getJob(req, res){
+//     if (req.user == null) {
+//         res.status(403).json({
+//             message: "You need to login first"
+//         });
+//         return;
+//     }
+//     if (req.user.role != "admin") {
+//         res.status(403).json({
+//             message: "You are not authorized to view job"
+//         });
+//         return;
+//     }
+
+//     Job.find(). then(
+//         (job)=>{
+//             res.json(job)
+//         }
+//     ).catch(
+//         ()=>{
+//             res.status(500).json({
+//                 message : "Job not found"
+//             })
+//         }
+//     )
+//     // USER → return only his jobs
+//     Job.find({ email: req.user.email })
+//         .then((jobs) => res.json(jobs))
+//         .catch(() => res.status(500).json({ message: "Job not found" }));
+// }
+    export function getJob(req, res) {
+        if (!req.user) {
+            return res.status(403).json({ message: "You need to login first" });
+        }
+
+        // ADMIN → all jobs
+        if (req.user.role === "admin") {
+            Job.find()
+                .then((jobs) => res.json(jobs))
+                .catch(() => res.status(500).json({ message: "Job not found" }));
+            return;
+        }
+
+        // USER → only their jobs
+        Job.find({ email: req.user.email })
+            .then((jobs) => res.json(jobs))
+            .catch(() => res.status(500).json({ message: "Job not found" }));
     }
 
-    Job.find(). then(
-        (job)=>{
-            res.json(job)
+    export function deleteJob(req, res){
+        if (req.user== null){
+            res.status(403).json({
+                message: "You need to login first"
+            });
+            return;
         }
-    ).catch(
-        ()=>{
+        if (req.user.role != "admin"){
+            res.status(403).json({
+                message: "You are not authorized to delete a job"
+            });
+            return;
+        }
+
+        Job.findOneAndDelete({
+            jobID: req.params.jobID
+        })
+        .then(() => {
+            res.json({
+                message: "Job deleted successfully"
+            });
+        }).catch((err) => {
             res.status(500).json({
-                message : "Job not found"
-            })
+                message: "Error deleting job",
+                error: err.message
+            });
+        });
+    }
+
+    export async function updateJob(req, res){
+        if (req.user == null) {
+            res.status(403).json({
+                message: "You need to login first"
+            });
+            return;
         }
-    )
-}
-
-export function deleteJob(req, res){
-    if (req.user== null){
-        res.status(403).json({
-            message: "You need to login first"
-        });
-        return;
-    }
-    if (req.user.role != "admin"){
-        res.status(403).json({
-            message: "You are not authorized to delete a job"
-        });
-        return;
-    }
-
-    Job.findOneAndDelete({
-        jobID: req.params.jobID
-    })
-    .then(() => {
-        res.json({
-            message: "Job deleted successfully"
-        });
-    }).catch((err) => {
-        res.status(500).json({
-            message: "Error deleting job",
-            error: err.message
-        });
-    });
-}
-
-export async function updateJob(req, res){
-    if (req.user == null) {
-        res.status(403).json({
-            message: "You need to login first"
-        });
-        return;
-    }
-    if (req.user.role != "admin") {
-        res.status(403).json({
-            message: "You are not authorized to update a job"
-        });
-        return;
-    }
-
-    try {
-        console.log('[updateJob] req.params.jobID =', req.params.jobID, 'by user =', req.user?.email || req.user?.name);
-        // Ensure updatedAt and allow updating currentLocation/status
-        const updates = {
-            ...req.body,
-            updatedAt: Date.now()
-        };
-
-        const updatedJob = await Job.findOneAndUpdate(
-            { jobID: req.params.jobID },
-            updates,
-            { new: true }
-        );
-
-        if (!updatedJob) {
-            console.warn('[updateJob] job not found for ID', req.params.jobID);
-            return res.status(404).json({ message: 'Job not found' });
+        if (req.user.role != "admin") {
+            res.status(403).json({
+                message: "You are not authorized to update a job"
+            });
+            return;
         }
 
-        // Emit real-time update to admin panel via Socket.io (if available)
-        // try {
-        //     const io = req.io;
-        //     if (io) {
-        //         io.to('adminPanel').emit('parcelLocationUpdated', {
-        //             parcelID: updatedParcel.parcelID,
-        //             newLocation: updatedParcel.currentLocation || updates.currentLocation,
-        //             status: updatedParcel.status,
-        //             updatedBy: req.user.email || req.user.name || 'system',
-        //             timestamp: updatedParcel.updatedAt || new Date().toISOString()
-        //         });
-        //         console.log('[updateParcel] Emitted parcelLocationUpdated for', updatedParcel.parcelID);
-        //     }
-        // } catch (emitErr) {
-        //     console.warn('Failed to emit parcelLocationUpdated event:', emitErr);
-        // }
+        try {
+            console.log('[updateJob] req.params.jobID =', req.params.jobID, 'by user =', req.user?.email || req.user?.name);
+            // Ensure updatedAt and allow updating currentLocation/status
+            const updates = {
+                ...req.body,
+                updatedAt: Date.now()
+            };
 
-        res.json({
-            message: "Job updated successfully",
-            data: updatedJob
-        });
-    } catch (err) {
-        res.status(500).json({
-            message: "Error updating job",
-            error: err.message
-        });
+            const updatedJob = await Job.findOneAndUpdate(
+                { jobID: req.params.jobID },
+                updates,
+                { new: true }
+            );
+
+            if (!updatedJob) {
+                console.warn('[updateJob] job not found for ID', req.params.jobID);
+                return res.status(404).json({ message: 'Job not found' });
+            }
+
+            // Emit real-time update to admin panel via Socket.io (if available)
+            // try {
+            //     const io = req.io;
+            //     if (io) {
+            //         io.to('adminPanel').emit('parcelLocationUpdated', {
+            //             parcelID: updatedParcel.parcelID,
+            //             newLocation: updatedParcel.currentLocation || updates.currentLocation,
+            //             status: updatedParcel.status,
+            //             updatedBy: req.user.email || req.user.name || 'system',
+            //             timestamp: updatedParcel.updatedAt || new Date().toISOString()
+            //         });
+            //         console.log('[updateParcel] Emitted parcelLocationUpdated for', updatedParcel.parcelID);
+            //     }
+            // } catch (emitErr) {
+            //     console.warn('Failed to emit parcelLocationUpdated event:', emitErr);
+            // }
+
+            res.json({
+                message: "Job updated successfully",
+                data: updatedJob
+            });
+        } catch (err) {
+            res.status(500).json({
+                message: "Error updating job",
+                error: err.message
+            });
+        }
     }
-}
 
 // search parcel by ID
 

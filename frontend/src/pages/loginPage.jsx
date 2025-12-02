@@ -57,6 +57,7 @@ export default function LoginPage() {
             toast.error("Unknown role: " + user.role);
             break;
         }
+        localStorage.setItem("userName", response.data.user.name);
       })
       .catch((error) => {
         console.error("Login failed:", error);
@@ -70,6 +71,7 @@ export default function LoginPage() {
     setShowSpinner(true);
     handleLogin();
   };
+  
 
   return (
     <div className="w-full min-h-screen flex flex-col lg:flex-row relative overflow-hidden bg-[#F8F9FA]">

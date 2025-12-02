@@ -61,7 +61,7 @@ export default function Job() {
       jobID: job.jobID,
       name: job.name,
       email: job.email,
-      address: job.address,
+      phoneNumber: job.phoneNumber,
       details: job.details,
       needDate: job.needDate,
       status: job.status,
@@ -143,7 +143,7 @@ export default function Job() {
                 <th className="p-2 sm:p-4 font-bold text-blue-700">Job ID</th>
                 <th className="p-2 sm:p-4 font-bold text-blue-700">Name</th>
                 <th className="p-2 sm:p-4 font-bold text-blue-700">E-mail</th>
-                <th className="p-2 sm:p-4 font-bold text-blue-700">Address</th>
+                <th className="p-2 sm:p-4 font-bold text-blue-700">Phone Number</th>
                 <th className="p-2 sm:p-4 font-bold text-blue-700">Details</th>
                 <th className="p-2 sm:p-4 font-bold text-blue-700">Need Date</th>
                 <th className="p-2 sm:p-4 font-bold text-blue-700">Status</th>
@@ -159,17 +159,17 @@ export default function Job() {
                   <td className="p-2 sm:p-4">{job.jobID}</td>
                   <td className="p-2 sm:p-4">{job.name}</td>
                   <td className="p-2 sm:p-4">{job.email}</td>
-                  <td className="p-2 sm:p-4">{job.address}</td>
+                  <td className="p-2 sm:p-4">{job.phoneNumber}</td>
                   <td className="p-2 sm:p-4">{job.details}</td>
                   <td className="p-2 sm:p-4">{new Date(job.needDate).toLocaleDateString()}</td>
                   <td className="p-2 sm:p-4">
                     <span
-                      className={`px-2 py-1 rounded-full text-white text-[12px] font-semibold shadow ${
+                      className={`px-2 py-1 rounded-full text-black text-[12px] font-semibold shadow ${
                         job.status === "Completed"
                           ? "bg-green-500"
-                          : job.status === "In Progress"
-                          ? "bg-yellow-500"
-                          : "bg-gray-500"
+                          : job.status === "In_Progress"
+                          ? "bg-[#48CAE4]"
+                          : "bg-[#FFD166]"
                       }`}
                     >
                       {job.status}

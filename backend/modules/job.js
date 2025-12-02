@@ -15,9 +15,9 @@ const jobSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    address : {
+    phoneNumber : {
         type: String,
-        required: true
+        required: true,
     },
     
     details : {

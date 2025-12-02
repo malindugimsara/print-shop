@@ -15,7 +15,7 @@ export default function EditJob() {
     const [jobID, setJobID] = useState(locationData.state.jobID);
     const [name, setName] = useState(locationData.state.name);
     const [email, setEmail] = useState(locationData.state.email);
-    const [address, setAddress] = useState(locationData.state.address);
+    const [phoneNumber, setPhoneNumber] = useState(locationData.state.phoneNumber);
     const [details, setDetails] = useState(locationData.state.details);
     const [needDate, setNeedDate] = useState(locationData.state.needDate || new Date().toISOString().split("T")[0]);
     const [status, setStatus] = useState(locationData.state.status || "Pending");
@@ -25,7 +25,7 @@ export default function EditJob() {
             jobID,
             name,
             email,
-            address,
+            phoneNumber,
             details,
             needDate,
             status
@@ -90,11 +90,12 @@ export default function EditJob() {
                         type="email"
                         placeholder="E-mail"
                     />
-                    <textarea
-                        value={address}
-                        onChange={(e) => setAddress(e.target.value)}
+                    <input
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(e.target.value)}
                         className="w-full h-16 border border-gray-300 rounded-lg px-4 py-2 resize-none focus:border-blue-400 focus:outline-none"
-                        placeholder="Address"
+                        type="number"
+                        placeholder="Phone Number"
                     />
                     <textarea
                         value={details}
