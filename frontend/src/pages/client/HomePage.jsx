@@ -24,7 +24,7 @@ export default function HomePage() {
 
             {/* Upload Button */}
             <button
-              onClick={() => navigate("/uploadfile")}
+              onClick={() => navigate("/addorder")}
               className="
                 w-full sm:w-auto px-8 py-3 rounded-xl 
                 bg-[#D16BA5] text-white font-semibold 

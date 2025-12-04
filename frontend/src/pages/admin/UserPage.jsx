@@ -35,6 +35,12 @@ function UsersPage() {
 
   // delete user
   async function deleteUser(userID) {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this job? This action cannot be undo."
+    );
+
+    if (!confirmDelete) return;
+
     const token = localStorage.getItem("token");
     try {
       await axios.delete(

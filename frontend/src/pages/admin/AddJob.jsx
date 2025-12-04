@@ -2,85 +2,76 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import mediaUpload from "../utils/mediaupload";
 
 export default function AddJob() {
-    const [jobID, setJobID] = useState("");
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
     const [details, setDetails] = useState("");
     const [needDate, setNeedDate] = useState("");
     const [status, setStatus] = useState("");
-    const [isGeneratingID, setIsGeneratingID] = useState(true);
     const [showSpinner, setShowSpinner] = useState(false);
+    const [images, setImages] = useState([]);
 
     const navigate = useNavigate();
 
-    useEffect(() => {
-        generateJobID();
-    }, []);
+    // 🔥 NEW — Fetch user by email
+    const fetchUserByEmail = async (email) => {
+        if (!email.includes("@")) return;
 
-    const generateJobID = async () => {
         try {
-            const token = localStorage.getItem("token");
-
-            const response = await axios.get(
-                import.meta.env.VITE_BACKEND_URL + "/api/job",
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
+            const res = await axios.get(
+                import.meta.env.VITE_BACKEND_URL + `/api/user/email/${email}`
             );
 
-            const existingJobs = response.data;
+            if (!res.data) return;
 
-            let highestNumber = 0;
+            setName(res.data.name || "");
+            setPhoneNumber(res.data.phoneNumber || "");
 
-            existingJobs.forEach(job => {
-                if (job.jobID && job.jobID.startsWith("J")) {
-                    const numberPart = parseInt(job.jobID.substring(1));
-                    if (!isNaN(numberPart) && numberPart > highestNumber) {
-                        highestNumber = numberPart;
-                    }
-                }
-            });
-
-            const nextNumber = highestNumber + 1;
-            const newJobID = `J${nextNumber.toString().padStart(3, "0")}`;
-
-            setJobID(newJobID);
-            setIsGeneratingID(false);
         } catch (error) {
-            console.error("Error generating job ID:", error);
-
-            const fallbackNumber = Math.floor(Math.random() * 1000) + 1;
-            const fallbackID = `J${fallbackNumber.toString().padStart(3, "0")}`;
-
-            setJobID(fallbackID);
-            setIsGeneratingID(false);
-            toast.error("Could not fetch existing jobs. Using backup ID.");
+            console.log("User not found for email:", email);
         }
     };
 
+    // 🔥 NEW — Auto fetch user 600ms after typing email
+    useEffect(() => {
+        if (!email) return;
+
+        const delay = setTimeout(() => {
+            fetchUserByEmail(email);
+        }, 600);
+
+        return () => clearTimeout(delay);
+    }, [email]);
+
     async function handleAddJob() {
+
+        const promisesArray = [];
+        for (let i = 0; i < images.length; i++) {
+            const promise = mediaUpload(images[i]);
+            promisesArray[i] = promise;
+        }
+
         try {
             setShowSpinner(true);
+            const imageUrls = await Promise.all(promisesArray);
 
-            if (!jobID || !name || !email || !phoneNumber || !details || !needDate || !status) {
+            if (!name || !email || !phoneNumber || !details || !needDate || !status) {
                 toast.error("Please fill in all required fields.");
                 setShowSpinner(false);
                 return;
             }
 
             const job = {
-                jobID,
                 name,
                 email,
                 phoneNumber,
                 details,
                 needDate,
-                status
+                status,
+                images: imageUrls
             };
 
             const token = localStorage.getItem("token");
@@ -106,70 +97,74 @@ export default function AddJob() {
     }
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-100 to-gray-300">
+        <div className="min-h-screen flex flex-col items-center justify-center">
             
             <div className="w-full max-w-lg shadow-2xl rounded-2xl flex flex-col items-center bg-white p-8">
                 <h1 className="text-4xl font-extrabold text-[#2C3E50] mb-8 drop-shadow-lg">Add Job</h1>
-                {/* Job ID */}
-                <div className="w-full mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Job ID (Auto-generated)
-                    </label>
-                    <input
-                        value={isGeneratingID ? "Generating..." : jobID}
-                        readOnly
-                        className="w-full h-12 border border-gray-300 rounded-lg px-4 bg-gray-100 text-gray-600 focus:outline-none cursor-not-allowed"
-                        type="text"
-                    />
-                </div>
 
-                {/* Name */}
-                <input
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="w-full h-12 border border-gray-300 rounded-lg px-4 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
-                    placeholder="Name"
-                    type="text"
-                />
-
-                {/* Email */}
+                {/* Email (trigger autofill) */}
+                <label className="w-full text-sm font-semibold text-gray-700 mb-2">Email</label>
                 <input
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full h-12 border border-gray-300 rounded-lg px-4 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+                    className="w-full h-12 border border-gray-300 rounded-lg px-4 mb-4"
                     placeholder="Email"
                     type="email"
                 />
 
-                {/* phoneNumber */}
-                <textarea
+                {/* Name */}
+                <label className="w-full text-sm font-semibold text-gray-700 mb-2">Name</label>
+                <input
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full h-12 border border-gray-300 rounded-lg px-4 mb-4"
+                    placeholder="Name"
+                    type="text"
+                />
+
+                {/* Phone Number */}
+                <label className="w-full text-sm font-semibold text-gray-700 mb-2">Phone Number</label>
+                <input
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
-                    className="w-full h-16 border border-gray-300 rounded-lg px-4 py-2 mb-4 resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+                    className="w-full h-12 border border-gray-300 rounded-lg px-4 mb-4"
                     placeholder="Phone Number"
+                    type="text"
                 />
 
                 {/* Details */}
+                <label className="w-full text-sm font-semibold text-gray-700 mb-2">Details</label>
                 <textarea
                     value={details}
                     onChange={(e) => setDetails(e.target.value)}
-                    className="w-full h-20 border border-gray-300 rounded-lg px-4 py-2 mb-4 resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+                    className="w-full h-20 border border-gray-300 rounded-lg px-4 py-2 mb-4 resize-none"
                     placeholder="Details"
                 />
 
                 {/* Need Date */}
+                <label className="w-full text-sm font-semibold text-gray-700 mb-2">Need Date</label>
                 <input
                     value={needDate}
                     onChange={(e) => setNeedDate(e.target.value)}
-                    className="w-full h-12 border border-gray-300 rounded-lg px-4 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+                    className="w-full h-12 border border-gray-300 rounded-lg px-4 mb-4"
                     type="date"
                 />
 
+                {/* Images */}
+                <label className="w-full text-sm font-semibold text-gray-700 mb-2">Images</label>
+                <input
+                    type="file"
+                    multiple
+                    onChange={(e) => setImages(Array.from(e.target.files))}
+                    className="w-full border rounded-lg px-4 py-2 mb-4"
+                />
+
                 {/* Status */}
+                <label className="w-full text-sm font-semibold text-gray-700 mb-2">Status</label>
                 <select
                     value={status}
                     onChange={(e) => setStatus(e.target.value)}
-                    className="w-full h-12 border border-gray-300 rounded-lg px-4 mb-6 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+                    className="w-full h-12 border border-gray-300 rounded-lg px-4 mb-6"
                 >
                     <option value="" disabled>Select status</option>
                     <option value="Pending">Pending</option>
@@ -177,23 +172,17 @@ export default function AddJob() {
                     <option value="Completed">Completed</option>
                 </select>
 
-                {/* Submit */}
                 <button
                     onClick={handleAddJob}
-                    className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg mb-4 transition duration-200 shadow-md"
+                    className="w-full h-12 bg-blue-600 text-white rounded-lg mb-4"
                     disabled={showSpinner}
                 >
                     {showSpinner ? "Adding..." : "Add Job"}
                 </button>
 
-                {/* Cancel */}
-                <Link
-                    to={"/admin/"}
-                    className="w-full h-12 bg-gray-400 hover:bg-gray-500 text-[#1E1E1E] font-semibold rounded-lg flex items-center justify-center transition duration-200 shadow-md"
-                >
+                <Link to={"/admin/"} className="w-full h-12 bg-gray-400 text-center pt-3 rounded-lg">
                     Cancel
                 </Link>
-
             </div>
         </div>
     );

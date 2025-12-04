@@ -28,7 +28,7 @@ const Header = () => {
         {/* LOGO / HOME */}
         <div 
           className="flex items-center cursor-pointer"
-          onClick={() => navigate("/home")}
+          onClick={() => navigate("/viewaccount")}
         >
           <VscAccount className="text-2xl mt-1"/>
           <span className="text-md font-bold text-[#D16BA5] ml-2 mt-1">

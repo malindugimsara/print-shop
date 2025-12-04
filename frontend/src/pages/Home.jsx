@@ -6,6 +6,13 @@ import Test from "./test"
 import UploadFilePage from "./client/UploadFilePage"
 import MyOrdersPage from "./client/MyOrderPage"
 import AddOrder from "./client/AddOrder"
+import PricingPage from "./client/PricingPage"
+import ContactPage from "./client/ContactPage"
+import Test1 from "./client/test"
+import EditOrder from "./client/EditOrder"
+import UsersAccountDetails from "./client/UserAccountDetails"
+import EditAccount from "./client/EditAccount"
+
 
 
 function Home() {
@@ -18,7 +25,12 @@ function Home() {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/addorder" element={<AddOrder />} />
         <Route path="/myorder" element={<MyOrdersPage />} />
-        {/* <Route path="/pricing" element={< />} /> */}
+        <Route path="/pricing" element={<PricingPage />} />
+        <Route path="/contact" element={<UploadFilePage />} />
+        <Route path="/editorder" element={<EditOrder />} />
+        <Route path="/editaccount" element={<EditAccount />} />
+         <Route path="/viewaccount" element={<UsersAccountDetails />} />
+        <Route path="/test" element={<Test1 />} />
       </Routes>
     </div>
   );

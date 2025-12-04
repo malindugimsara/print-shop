@@ -118,14 +118,14 @@ export default function JobReportPage() {
                 job.jobID || "N/A",
                 job.name || "N/A",
                 job.email || "N/A",
-                job.address || "N/A",
+                job.phoneNumber || "N/A",
                 job.status || "N/A",
                 job.needDate ? new Date(job.needDate).toLocaleDateString() : "N/A",
                 job.details ? (job.details.substring(0, 30) + (job.details.length > 30 ? "..." : "")) : "N/A"
             ]);
 
             autoTable(doc, {
-                head: [['Job ID', 'Name', 'Email', 'Address', 'Status', 'Need Date', 'Details']],
+                head: [['Job ID', 'Name', 'Email', 'Phone Number', 'Status', 'Need Date', 'Details']],
                 body: tableData,
                 startY: yPosition + 10,
                 styles: { fontSize: 8, cellPadding: 2 },

@@ -14,6 +14,10 @@ export default function UploadFilePage() {
     setFile(e.dataTransfer.files[0]);
   };
 
+
+  
+
+
   return (
     <div className="min-h-screen bg-[#F8F9FA] flex flex-col items-center px-6 py-16 pt-30 ">
       

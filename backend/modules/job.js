@@ -32,6 +32,9 @@ const jobSchema = new mongoose.Schema({
         type: String,
         default: 'Pending'
     },
+    images : {
+        type: [String]
+    }
     
 })
 

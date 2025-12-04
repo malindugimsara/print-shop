@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { VscLoading } from "react-icons/vsc";
 import { FcGoogle } from "react-icons/fc";
+import { useGoogleLogin } from "@react-oauth/google";
 
 export default function LoginPage() {
   const location = useLocation();
@@ -13,6 +14,32 @@ export default function LoginPage() {
   const [showSpinner, setShowSpinner] = useState(false);
   const navigate = useNavigate();
   const [modalIsOpen, setIsOpen] = useState(false);
+  const loginWithGoogle = useGoogleLogin({
+    flow: "implicit",
+    scope: "openid email profile",
+    onSuccess: (res) => {
+        setShowSpinner(true);
+
+        axios.post(import.meta.env.VITE_BACKEND_URL + "/api/user/google", {
+            accessToken: res.access_token,   // NOW it exists
+        })
+        .then((response) => {
+            toast.success("Login successful!");
+            localStorage.setItem("token", response.data.token);
+
+            const user = response.data.user;
+
+            if (user.role === "admin") navigate("/admin");
+            else navigate("/home");
+        })
+        .catch((error) => {
+            console.error("Login failed:", error);
+            toast.error(error.response?.data?.message || "Login failed.");
+            setShowSpinner(false);
+        });
+    }
+});
+
 
   function openModal() {
     setIsOpen(true);
@@ -58,6 +85,7 @@ export default function LoginPage() {
             break;
         }
         localStorage.setItem("userName", response.data.user.name);
+        localStorage.setItem("email", response.data.user.email);
       })
       .catch((error) => {
         console.error("Login failed:", error);
@@ -143,7 +171,8 @@ export default function LoginPage() {
             </div>
 
             {/* Google Sign In Button */}
-            <button className="w-full h-11 bg-white border border-[#E0E0E0] hover:bg-[#F8F9FA] text-[#2C3E50] text-sm font-semibold rounded-lg transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center space-x-3">
+            <button className="w-full h-11 bg-white border border-[#E0E0E0] hover:bg-[#F8F9FA] text-[#2C3E50] text-sm font-semibold rounded-lg transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center space-x-3"
+            onClick={loginWithGoogle}>
               <FcGoogle className="text-2xl" />
               <span>Sign in with Google</span>
             </button>

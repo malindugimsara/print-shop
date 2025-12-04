@@ -11,6 +11,7 @@ export default function Job() {
   const [job, setJob] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [selectdJob, setSelectedJob] = useState(null);
+  const [fileModalJob, setFileModalJob] = useState(null);
 
   // Filter states
   const [searchEmail, setSearchEmail] = useState("");
@@ -39,7 +40,7 @@ export default function Job() {
 
   async function deletejob(jobID) {
     const confirmDelete = window.confirm(
-      "Are you sure you want to delete this job? This action cannot be undone."
+      "Are you sure you want to delete this job? This action cannot be undo."
     );
 
     if (!confirmDelete) return;
@@ -65,6 +66,7 @@ export default function Job() {
       details: job.details,
       needDate: job.needDate,
       status: job.status,
+      images: job.images
     });
   }
 
@@ -80,7 +82,7 @@ export default function Job() {
   });
 
   return (
-    <div className="w-full h-full rounded-xl p-4 sm:p-6 bg-gradient-to-br from-gray-100 to-blue-50 relative shadow-lg">
+    <div className="w-full h-full mb-10">
       {/* ➕ Add Job Button */}
       <Link
         to={"/admin/addjob"}
@@ -147,6 +149,7 @@ export default function Job() {
                 <th className="p-2 sm:p-4 font-bold text-blue-700">Details</th>
                 <th className="p-2 sm:p-4 font-bold text-blue-700">Need Date</th>
                 <th className="p-2 sm:p-4 font-bold text-blue-700">Status</th>
+                <th className="p-2 sm:p-4 font-bold text-blue-700">File</th>
                 <th className="p-2 sm:p-4 font-bold text-blue-700">Action</th>
               </tr>
             </thead>
@@ -167,7 +170,7 @@ export default function Job() {
                       className={`px-2 py-1 rounded-full text-black text-[12px] font-semibold shadow ${
                         job.status === "Completed"
                           ? "bg-green-500"
-                          : job.status === "In_Progress"
+                          : job.status === "In Progress"
                           ? "bg-[#48CAE4]"
                           : "bg-[#FFD166]"
                       }`}
@@ -175,6 +178,18 @@ export default function Job() {
                       {job.status}
                     </span>
                   </td>
+                  <td className="p-2 sm:p-4">
+                    <button
+                      onClick={() => setFileModalJob(job)}
+                      className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded-full text-xs font-semibold transition-all duration-150 shadow "
+                      title="View Files"
+                    >
+                      Files
+                    </button>
+                  </td>
+
+
+
                   <td className="p-2 sm:p-4">
                     <div className="flex flex-wrap justify-center gap-2">
                       <MdOutlineDeleteOutline
@@ -212,6 +227,72 @@ export default function Job() {
       {loaded && filteredJobs.length === 0 && (
         <p className="text-center text-gray-500 mt-10 text-lg font-semibold">No job found for these filters.</p>
       )}
+
+      {fileModalJob && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50 p-4">
+          <div className="bg-white p-6 rounded-xl shadow-2xl w-full max-w-3xl overflow-y-auto max-h-[80vh]">
+            <h2 className="text-2xl font-bold mb-4 text-blue-600">Files for {fileModalJob.jobID}</h2>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+              {fileModalJob.images?.map((fileUrl, i) => (
+                <div key={i} className="flex flex-col items-center">
+                  {fileUrl.match(/\.(jpeg|jpg|gif|png)$/i) ? (
+                    <img src={fileUrl} className="w-32 h-32 object-cover rounded mb-2" />
+                  ) : (
+                    <div className="w-32 h-32 flex items-center justify-center bg-gray-200 rounded mb-2">
+                      <span className="text-gray-600">File</span>
+                    </div>
+                  )}
+
+                  <div className="flex gap-2">
+                    {/* Preview Button */}
+                    <button
+                      onClick={() => window.open(fileUrl, "_blank")}
+                      className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs"
+                    >
+                      Preview
+                    </button>
+
+                    {/* Download Button */}
+                    <button
+                      onClick={async () => {
+                        try {
+                          const response = await fetch(fileUrl);
+                          if (!response.ok) throw new Error("Failed to fetch file");
+                          const blob = await response.blob();
+                          const url = window.URL.createObjectURL(blob);
+                          const a = document.createElement("a");
+                          a.href = url;
+                          a.download = `job-${fileModalJob.jobID}-file${i + 1}`;
+                          document.body.appendChild(a);
+                          a.click();
+                          a.remove();
+                          window.URL.revokeObjectURL(url);
+                        } catch (err) {
+                          console.error("Download error:", err.message);
+                          alert("Failed to download file.");
+                        }
+                      }}
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs"
+                    >
+                      Download
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setFileModalJob(null)}
+              className="mt-4 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded font-semibold"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+
 
       {/* QR Code Modal */}
       {selectdJob && (

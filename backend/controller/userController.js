@@ -306,12 +306,12 @@ export function updateUser(req, res) {
     return;
   }
 
-  if (req.user.role !== "admin") {
-    res.status(403).json({
-      message: "You are not authorized to update a user",
-    });
-    return;
-  }
+//   if (req.user.role !== "admin") {
+//     res.status(403).json({
+//       message: "You are not authorized to update a user",
+//     });
+//     return;
+//   }
 
   // Assuming you're using MongoDB with Mongoose and User model
   User.findByIdAndUpdate(req.params.userID, req.body, { new: true })
@@ -341,11 +341,11 @@ export function getAllUsers(req, res) {
             message: "You need to login first"
         });
     }
-    if (req.user.role != "admin") {
-        return res.status(403).json({
-            message: "You are not authorized to view all users"
-        });
-    }
+    // if (req.user.role != "admin") {
+    //     return res.status(403).json({
+    //         message: "You are not authorized to view all users"
+    //     });
+    // }
 
     User.find().then((users) => {
         res.json(users);

@@ -16,6 +16,8 @@ export default function EditUser() {
     const [role, setRole] = useState(userData?.role || "");
     const [address, setAddress] = useState(userData?.address || "");
 
+    const [showSpinner, setShowSpinner] = useState(false);
+
     useEffect(() => {
         if (!userData) {
             toast.error("No user data found to edit.");
@@ -28,6 +30,7 @@ export default function EditUser() {
     }
 
     async function handleEditUser() {
+        setShowSpinner(true);
         const updatedUser = {
             name,
             email,
@@ -53,6 +56,8 @@ export default function EditUser() {
         } catch (error) {
             toast.error(error.response?.data?.message || "Failed to edit user.");
             console.error(error);
+        }finally {
+            setShowSpinner(false);
         }
     }
 
@@ -67,56 +72,71 @@ export default function EditUser() {
                         handleEditUser();
                     }}
                 >
-                    <input
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        className="w-full h-12 border border-gray-300 rounded-lg px-4 focus:outline-none focus:ring-2 focus:ring-green-400 transition"
-                        type="text"
-                        placeholder="Name"
-                        required
-                    />
-                    <input
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="w-full h-12 border border-gray-300 rounded-lg px-4 focus:outline-none focus:ring-2 focus:ring-green-400 transition"
-                        type="email"
-                        placeholder="E-mail"
-                        required
-                    />
-                    <input
-                        value={phoneNumber}
-                        onChange={(e) => setPhoneNumber(e.target.value)}
-                        className="w-full h-12 border border-gray-300 rounded-lg px-4 focus:outline-none focus:ring-2 focus:ring-green-400 transition"
-                        type="text"
-                        placeholder="Phone Number"
-                        required
-                    />
-                    <input
-                        value={address}
-                        onChange={(e) => setAddress(e.target.value)}
-                        className="w-full h-12 border border-gray-300 rounded-lg px-4 focus:outline-none focus:ring-2 focus:ring-green-400 transition"
-                        type="text"
-                        placeholder="Address"
-                        required
-                    />
-                    <select
-                        value={role}
-                        onChange={(e) => setRole(e.target.value)}
-                        className="w-full h-12 border border-gray-300 rounded-lg px-4 focus:outline-none focus:ring-2 focus:ring-green-400 transition bg-white"
-                        required
-                    >
-                        <option value="" disabled>
-                            Select Role
-                        </option>
-                        <option value="admin">Admin</option>
-                        <option value="postman">Postman</option>
-                        <option value="user">Customer</option>
-                    </select>
+                    <div className="flex flex-col gap-2">
+                        <label className="text-gray-700 font-semibold">Name</label>
+                        <input
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            className="w-full h-12 border border-gray-300 rounded-lg px-4 focus:outline-none focus:ring-2 focus:ring-green-400 transition"
+                            type="text"
+                            placeholder="Name"
+                            required
+                        />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                        <label className="text-gray-700 font-semibold">E-mail</label>
+                        <input
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="w-full h-12 border border-gray-300 rounded-lg px-4 focus:outline-none focus:ring-2 focus:ring-green-400 transition"
+                            type="email"
+                            placeholder="E-mail"
+                            required
+                        />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                        <label className="text-gray-700 font-semibold">Phone Number</label>
+                        <input
+                            value={phoneNumber}
+                            onChange={(e) => setPhoneNumber(e.target.value)}
+                            className="w-full h-12 border border-gray-300 rounded-lg px-4 focus:outline-none focus:ring-2 focus:ring-green-400 transition"
+                            type="text"
+                            placeholder="Phone Number"
+                            required
+                        />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                        <label className="text-gray-700 font-semibold">Address</label>
+                        <input
+                            value={address}
+                            onChange={(e) => setAddress(e.target.value)}
+                            className="w-full h-12 border border-gray-300 rounded-lg px-4 focus:outline-none focus:ring-2 focus:ring-green-400 transition"
+                            type="text"
+                            placeholder="Address"
+                            required
+                        />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                        <label className="text-gray-700 font-semibold">Role</label>
+                        <select
+                            value={role}
+                            onChange={(e) => setRole(e.target.value)}
+                            className="w-full h-12 border border-gray-300 rounded-lg px-4 focus:outline-none focus:ring-2 focus:ring-green-400 transition bg-white"
+                            required
+                        >
+                            <option value="" disabled>
+                                Select Role
+                            </option>
+                            <option value="admin">Admin</option>
+                            <option value="user">Customer</option>
+                        </select>
+                    </div>
                     <button
                         type="submit"
                         className="w-full h-12 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg transition mt-2 shadow"
+                        disabled={showSpinner}
                     >
-                        Edit User
+                       {showSpinner ? "Saving..." : "Save Changes"}
                     </button>
                 </form>
                 <Link

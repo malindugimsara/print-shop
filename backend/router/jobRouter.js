@@ -5,7 +5,7 @@ import { createJob, deleteJob, getJob, updateJob } from '../controller/jobContro
 
 const jobRouter = express.Router();
 
-jobRouter.post('/', createJob)
+jobRouter.post('/', createJob )
 jobRouter.get('/', getJob);
 jobRouter.delete('/:jobID', deleteJob)
 jobRouter.put('/:jobID', updateJob);

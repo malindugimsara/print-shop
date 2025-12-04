@@ -4,13 +4,13 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import mediaUpload from "../utils/mediaupload";
 
-export default function EditJob() {
+export default function EditOrder() {
     const locationData = useLocation();
     const navigate = useNavigate();
 
     if (!locationData.state) {
         toast.error("No job data found.");
-        window.location.href = "/admin/viewjob";
+        window.location.href = "/myorder";
     }
 
     const jobData = locationData.state;
@@ -21,7 +21,6 @@ export default function EditJob() {
     const [phoneNumber, setPhoneNumber] = useState(jobData.phoneNumber);
     const [details, setDetails] = useState(jobData.details);
     const [needDate, setNeedDate] = useState(jobData.needDate);
-    const [status, setStatus] = useState(jobData.status);
 
     // ⭐ Correct images handling
     const [existingImages, setExistingImages] = useState(jobData.images || []);
@@ -53,12 +52,9 @@ export default function EditJob() {
             const finalImages = [...existingImages, ...uploadedImageUrls];
 
             const updatedJob = {
-                name,
-                email,
                 phoneNumber,
                 details,
                 needDate,
-                status,
                 images: finalImages,
             };
 
@@ -75,7 +71,7 @@ export default function EditJob() {
             );
 
             toast.success("Job updated successfully!");
-            navigate("/admin/viewjob");
+            navigate("/myorder");
         } catch (error) {
             console.error(error);
             toast.error(error.response?.data?.message || "Failed to update job.");
@@ -85,7 +81,7 @@ export default function EditJob() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-green-100 p-5">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-green-100 p-5 pt-20">
             <div className="w-full max-w-lg bg-white shadow-2xl rounded-2xl p-8 flex flex-col items-center">
 
                 <h1 className="text-4xl font-extrabold text-gray-800 mb-6">
@@ -107,6 +103,7 @@ export default function EditJob() {
                     <div>
                         <label className="block text-sm font-semibold text-gray-700 mb-2">Name</label>
                         <input
+                            disabled
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             className="w-full h-12 border border-gray-300 rounded-lg px-4"
@@ -118,6 +115,7 @@ export default function EditJob() {
                     <div>
                         <label className="block text-sm font-semibold text-gray-700 mb-2">Email</label>
                         <input
+                            disabled
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             className="w-full h-12 border border-gray-300 rounded-lg px-4"
@@ -129,6 +127,7 @@ export default function EditJob() {
                     <div>
                         <label className="block text-sm font-semibold text-gray-700 mb-2">Phone Number</label>
                         <input
+                            disabled
                             value={phoneNumber}
                             onChange={(e) => setPhoneNumber(e.target.value)}
                             className="w-full h-12 border border-gray-300 rounded-lg px-4"
@@ -153,7 +152,7 @@ export default function EditJob() {
                             value={needDate}
                             onChange={(e) => setNeedDate(e.target.value)}
                             type="date"
-                            className="w-full h-12 border border-gray-300 rounded-lg px-4"
+                            className="w-full h-12 border border-gray-300 rounded-lg px-4 focus:outline-none"
                         />
                     </div>
 
@@ -203,20 +202,6 @@ export default function EditJob() {
                         />
                     </div>
 
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">Status</label>
-                        <select
-                            value={status}
-                            onChange={(e) => setStatus(e.target.value)}
-                            className="w-full h-12 border border-gray-300 rounded-lg px-4"
-                        >
-                            <option disabled>Select Status</option>
-                            <option value="Pending">Pending</option>
-                            <option value="In Progress">In Progress</option>
-                            <option value="Completed">Completed</option>
-                        </select>
-                    </div>
-
                     <button
                         type="button"
                         onClick={handleEditJob}
@@ -227,7 +212,7 @@ export default function EditJob() {
                     </button>
 
                     <Link
-                        to="/admin/viewjob"
+                        to="/myorder"
                         className="w-full h-12 bg-red-500 text-white rounded-lg flex items-center justify-center"
                     >
                         Cancel

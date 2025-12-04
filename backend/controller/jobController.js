@@ -1,33 +1,72 @@
 import Job from "../modules/job.js";
 import nodemailer from "nodemailer";
 
-export function createJob(req, res){
-    if (req.user== null){
-        res.status(403).json({
-            message: "You need to login first"
+// export function createJob(req, res){
+//     if (req.user== null){
+//         res.status(403).json({
+//             message: "You need to login first"
+//         });
+//         return;
+//     }
+//     // if (req.user.role != "admin"){
+//     //     res.status(403).json({
+//     //         message: "You are not authorized to create a job"
+//     //     });
+//     //     return;
+//     // }
+
+//     const job = new Job(req.body);
+
+//     job.save().then(() => {
+//         res.json({
+//             message: "Job created successfully",
+//         });
+//     }).catch((err) => {
+//         res.status(500).json({
+//             message: "Error creating job",
+//             error: err.message
+//         });
+//     });
+// }
+
+export const createJob = async (req, res) => {
+    try {
+        // get all jobs
+        const jobs = await Job.find();
+
+        let highestNumber = 0;
+
+        jobs.forEach(job => {
+            if (job.jobID && job.jobID.startsWith("J")) {
+                const numberPart = parseInt(job.jobID.substring(1));
+                if (!isNaN(numberPart) && numberPart > highestNumber) {
+                    highestNumber = numberPart;
+                }
+            }
         });
-        return;
+
+        const nextNumber = highestNumber + 1;
+        const jobID = `J${nextNumber.toString().padStart(3, "0")}`;
+
+        const job = new Job({
+            jobID,
+            name: req.body.name,
+            email: req.body.email,
+            phoneNumber: req.body.phoneNumber,
+            details: req.body.details,
+            needDate: req.body.needDate,
+            status: req.body.status || "Pending",
+            images: req.body.images || [],
+        });
+
+        await job.save();
+        res.status(201).json(job);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Failed to create job" });
     }
-    // if (req.user.role != "admin"){
-    //     res.status(403).json({
-    //         message: "You are not authorized to create a job"
-    //     });
-    //     return;
-    // }
+};
 
-    const job = new Job(req.body);
-
-    job.save().then(() => {
-        res.json({
-            message: "Job created successfully",
-        });
-    }).catch((err) => {
-        res.status(500).json({
-            message: "Error creating job",
-            error: err.message
-        });
-    });
-}
 
 // export function getJob(req, res){
 //     if (req.user == null) {
@@ -114,12 +153,12 @@ export function createJob(req, res){
             });
             return;
         }
-        if (req.user.role != "admin") {
-            res.status(403).json({
-                message: "You are not authorized to update a job"
-            });
-            return;
-        }
+        // if (req.user.role != "admin") {
+        //     res.status(403).json({
+        //         message: "You are not authorized to update a job"
+        //     });
+        //     return;
+        // }
 
         try {
             console.log('[updateJob] req.params.jobID =', req.params.jobID, 'by user =', req.user?.email || req.user?.name);
