@@ -6,7 +6,7 @@ export default function HomePage() {
   const navigate = useNavigate();
   return (
     <div className="relative z-10 pt-10 ">
-      <section className="bg-[#F8F9FA] py-20 md:py-32">
+      <section className="bg-[#F8F9FA] py-20">
         <div className="container mx-auto px-4 text-center md:px-6">
 
           {/* Title */}
@@ -48,9 +48,10 @@ export default function HomePage() {
             </button>
           </div>
         </div>
+        <ServicesGrid />
       </section>
-    <ServicesGrid />
-    <Footer />
+    
+    
     </div>
   )
 }

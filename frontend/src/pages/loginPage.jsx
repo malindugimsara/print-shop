@@ -104,10 +104,10 @@ export default function LoginPage() {
   return (
     <div className="w-full min-h-screen flex flex-col lg:flex-row relative overflow-hidden bg-[#F8F9FA]">
       {/* Left Side - Logo Section */}
-      <div className="w-full lg:w-1/2 min-h-[40vh] lg:h-screen flex flex-col items-center justify-center">
-        <img src="logo1.png" alt="logo" className="w-90 h-90" />
-        <h1 className="text-5xl mt-5 font-bold text-[#2C3E50]">PRINT-HUB</h1>
-        <p className="mt-1 text-[#1E1E1E]/80 text-lg">Your Creative Output, Simplified.</p>
+      <div className="w-full lg:w-1/2 min-h-[25vh] lg:min-h-[40vh] lg:h-screen flex lg:flex-col items-center justify-center">
+        <img src="logo1.png" alt="logo" className="w-30 lg:w-90 lg:h-90" />
+        <h1 className="text-3xl lg:text-5xl mt-5 font-bold text-[#2C3E50]">PRINT-HUB</h1>
+        <p className="hidden lg:flex mt-1 text-[#1E1E1E]/80 md:text-lg">Your Creative Output, Simplified.</p>
       </div>
 
       {/* Right Side - Login Form */}
@@ -125,7 +125,7 @@ export default function LoginPage() {
           )}
 
           <div className="w-full text-center mb-6">
-            <h1 className="text-3xl font-bold text-[#2C3E50] mb-2">Welcome back!</h1>
+            <h1 className="text-2xl md:text-3xl font-bold text-[#2C3E50] mb-2">Welcome back!</h1>
             <p className="text-[#2C3E50]/70 text-sm">Please sign in to continue</p>
           </div>
 

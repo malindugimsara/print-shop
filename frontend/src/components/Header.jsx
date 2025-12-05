@@ -41,7 +41,6 @@ const Header = () => {
                 {[
                   { label: "Home", route: "/home" },
                   { label: "My Orders", route: "/myorder" },
-                  { label: "Add Order", route: "/addorder" },
                   { label: "Pricing", route: "/pricing" },
                   { label: "Contact", route: "/contact" }
                 ].map((item) => (
@@ -90,8 +89,9 @@ const Header = () => {
           {/* MOBILE LINKS */}
           {[
             { label: "Home", route: "/home" },
-            { label: "Orders", route: "/orders" },
-            { label: "About", route: "/about" }
+            { label: "My Orders", route: "/myorder" },
+            { label: "Pricing", route: "/pricing" },
+            { label: "Contact", route: "/contact" }
           ].map((item) => (
             <button
               key={item.route}

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { MdOutlineEdit } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { IoMdArrowRoundBack } from "react-icons/io";
 
 function UsersAccountDetails() {
   const [user, setUser] = useState([]);
@@ -59,7 +60,7 @@ return (
                                     to="/home"
                                     className="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded-lg font-semibold transition"
                                 >
-                                    Cancel
+                                    <IoMdArrowRoundBack className="text-lg"/>
                                 </Link>
                                     <button
                                     type="button"

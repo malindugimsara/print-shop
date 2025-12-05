@@ -66,19 +66,19 @@ function RegisterPage() {
           <div className="absolute top-1/2 right-1/3 w-52 h-52 bg-yellow-300/40 blur-3xl rounded-full"></div>
         </div>
 
-        <div className="z-10 text-center max-w-md">
+        <div className="z-10 text-center max-w-md ">
           <div className="flex justify-center mb-6">
-            <img src="logo1.png" alt="logo" className="w-45 h-45" />
+            <img src="logo1.png" alt="logo" className="w-30 md:w-45 md:h-55" />
           </div>
 
           <h1 className="text-4xl lg:text-6xl font-bold text-gray-800 mb-4">
             Join <span className="text-pink-600">PrintShop</span>
           </h1>
-          <p className="text-gray-600 text-base lg:text-lg mb-8">
+          <p className="hidden md:flex text-gray-600 text-base lg:text-lg mb-8">
             Create your account and start managing your print orders efficiently.
           </p>
 
-          <div className="space-y-3">
+          <div className="space-y-3 hidden md:flex">
             <div className="flex items-center justify-center space-x-3">
               <div className="w-3 h-3 bg-cyan-400 rounded-full animate-pulse"></div>
               <span className="text-gray-700 text-sm">Fast Order Management</span>
@@ -96,7 +96,7 @@ function RegisterPage() {
       </div>
 
       {/* Right Section (Form) */}
-      <div className="w-full lg:w-1/2 flex justify-center items-center bg-gray-50 px-6 lg:px-10 py-10 relative">
+      <div className="w-full lg:w-1/2 flex justify-center items-center bg-gray-50 px-6 lg:px-10 py-5 md:py-10 relative">
         {/* ✅ Loading Overlay */}
         {showSpinner && (
           <div className="absolute inset-0 bg-[#2C3E50]/60 backdrop-blur-sm rounded-none flex items-center justify-center z-50 ">

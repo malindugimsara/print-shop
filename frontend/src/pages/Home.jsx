@@ -12,6 +12,7 @@ import Test1 from "./client/test"
 import EditOrder from "./client/EditOrder"
 import UsersAccountDetails from "./client/UserAccountDetails"
 import EditAccount from "./client/EditAccount"
+import Footer from "../components/Footer"
 
 
 
@@ -26,12 +27,13 @@ function Home() {
         <Route path="/addorder" element={<AddOrder />} />
         <Route path="/myorder" element={<MyOrdersPage />} />
         <Route path="/pricing" element={<PricingPage />} />
-        <Route path="/contact" element={<UploadFilePage />} />
+        <Route path="/contact" element={<ContactPage />} />
         <Route path="/editorder" element={<EditOrder />} />
         <Route path="/editaccount" element={<EditAccount />} />
          <Route path="/viewaccount" element={<UsersAccountDetails />} />
         <Route path="/test" element={<Test1 />} />
       </Routes>
+      <Footer />
     </div>
   );
 }
