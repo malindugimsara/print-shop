@@ -1,4 +1,4 @@
-import { Routes, Route, Link, useLocation } from "react-router-dom";
+import { Routes, Route, Link, useLocation, useNavigate } from "react-router-dom";
 import { FiHome, FiMenu, FiX, FiFileText, FiPrinter } from "react-icons/fi";
 import { FaUsers, FaClipboardList } from "react-icons/fa";
 import { VscSignOut } from "react-icons/vsc";
@@ -20,12 +20,13 @@ export default function AdminPage() {
   const path = location.pathname;
   const [status, setStatus] = useState("loading");
   const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
       setStatus("unauthenticated");
-      window.location.href = "/";
+      navigate("/home")
     } else {
       axios
         .get(import.meta.env.VITE_BACKEND_URL + "/api/user/me", {
@@ -37,7 +38,7 @@ export default function AdminPage() {
           if (response.data.role !== "admin") {
             setStatus("unauthorized");
             toast.error("You are not authorized to access this page");
-            window.location.href = "/home";
+            navigate("/home")
           } else {
             setStatus("authenticated");
           }
@@ -45,14 +46,14 @@ export default function AdminPage() {
         .catch(() => {
           setStatus("unauthenticated");
           toast.error("You are not authenticated, please login");
-          window.location.href = "/";
+          navigate("/home")
         });
     }
   }, [status]);
 
   const handleSignOut = () => {
     localStorage.removeItem("token");
-    window.location.href = "/login";
+    navigate("/login");
   };
 
   return (
