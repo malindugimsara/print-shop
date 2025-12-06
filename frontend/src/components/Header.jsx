@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { FiMenu, FiX, FiLogOut } from "react-icons/fi";
 import { VscAccount } from "react-icons/vsc";
-import UserData from "../pages/client/userData";
+import UserData from "../pages/client/UserData";
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
