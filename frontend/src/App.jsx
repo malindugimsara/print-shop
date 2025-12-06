@@ -9,6 +9,7 @@ import { Toaster } from 'react-hot-toast'
 import Home from './pages/Home'
 import AdminPage from './pages/AdminPage'
 import { GoogleOAuthProvider } from '@react-oauth/google'
+import ForgotPasswordPage from './pages/forgotPassword'
 
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
           <Route path='/register' element={<RegisterPage/>}/>
           <Route path='/*' element={<Home/>}/>
           <Route path="/admin/*" element={<AdminPage />} />
+          <Route path='/forgotpassword' element={<ForgotPasswordPage/>}/>
         </Routes>
 
       </BrowserRouter>

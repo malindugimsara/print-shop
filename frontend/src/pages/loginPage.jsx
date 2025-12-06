@@ -153,7 +153,7 @@ export default function LoginPage() {
           <div className="w-full text-right mb-4">
             <button
               className="text-[#2C3E50] hover:text-[#D16BA5] text-sm font-semibold transition-colors duration-300"
-              onClick={openModal}
+              onClick={() => navigate("/forgotpassword")}
             >
               Forgot password?
             </button>
@@ -175,7 +175,7 @@ export default function LoginPage() {
             </div>
 
             {/* Google Sign In Button */}
-            <button className="w-full h-11 bg-white border border-[#E0E0E0] hover:bg-[#F8F9FA] text-[#2C3E50] text-sm font-semibold rounded-lg transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center space-x-3"
+            <button className="w-full h-11 bg-gradient-to-r from-green-400 to-[#48CAE4] border border-[#E0E0E0] hover:bg-[#F8F9FA] text-[#2C3E50] text-sm font-semibold rounded-lg transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center space-x-3"
             onClick={loginWithGoogle}>
               <FcGoogle className="text-2xl" />
               <span>Sign in with Google</span>
