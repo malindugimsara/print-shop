@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -7,24 +8,24 @@ const Footer = () => {
           <p className="text-sm">© 2025 PrintShop. All rights reserved.</p>
           
           <div className="flex gap-6">
-            <a
-              href="#"
+            <Link
+              
               className="text-sm transition-opacity hover:opacity-80"
             >
               Privacy Policy
-            </a>
-            <a
-              href="#"
+            </Link>
+            <Link
+              to={"/terms"}
               className="text-sm transition-opacity hover:opacity-80"
             >
               Terms of Service
-            </a>
-            <a
-              href="#"
+            </Link>
+            <Link
+              to={"/contact"}
               className="text-sm transition-opacity hover:opacity-80"
             >
               Contact Us
-            </a>
+            </Link>
           </div>
         </div>
       </div>

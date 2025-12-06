@@ -25,9 +25,13 @@ export default function LoginPage() {
         })
         .then((response) => {
             toast.success("Login successful!");
+
             localStorage.setItem("token", response.data.token);
 
             const user = response.data.user;
+            console.log(user.email)
+
+            localStorage.setItem("email", response.data.user.email);
 
             if (user.role === "admin") navigate("/admin");
             else navigate("/home");
@@ -84,7 +88,7 @@ export default function LoginPage() {
             toast.error("Unknown role: " + user.role);
             break;
         }
-        localStorage.setItem("userName", response.data.user.name);
+        localStorage.setItem("name", response.data.user.name);
         localStorage.setItem("email", response.data.user.email);
       })
       .catch((error) => {

@@ -16,8 +16,7 @@ const MyOrdersPage = () => {
   const [fileModalJob, setFileModalJob] = useState(null);
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    const email = user?.email;
+    const email = localStorage.getItem("email");
 
     if (!email) return;
 
@@ -38,9 +37,6 @@ const MyOrdersPage = () => {
       });
   }, []);
 
-  const handleTrackNew = () => {
-    navigate("/home");
-  };
 
   // STATUS COLORS
   const getStatusBadgeColor = (status) => {
@@ -77,7 +73,7 @@ const MyOrdersPage = () => {
 
         {/* PAGE TITLE */}
         <div className="text-center mb-8 sm:mb-14">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#2C3E50]">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#2C3E50] mt-5">
             Your Orders
           </h1>
           <p className="text-base sm:text-lg text-[#2C3E50]/70 mt-2 sm:mt-3">
@@ -91,8 +87,8 @@ const MyOrdersPage = () => {
             <h2 className="text-xl sm:text-2xl font-bold text-[#2C3E50]">
               Order Summary
             </h2>
-            <p className="text-xs sm:text-sm text-[#2C3E50]/60">
-              {orders.length} total orders
+            <p className="text-md sm:text-sm text-green-600/80">
+              {orders.length} total orders 
             </p>
           </div>
 
@@ -115,7 +111,7 @@ const MyOrdersPage = () => {
               </p>
 
               <button
-                onClick={handleTrackNew}
+                onClick={() => navigate("/addorder")}
                 className="mt-6 bg-[#48CAE4] hover:bg-[#3ab4ca] text-white px-5 py-2 rounded-lg transition text-sm sm:text-base"
               >
                 Create Your First Order
@@ -265,51 +261,30 @@ const MyOrdersPage = () => {
         {/* Statistics Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mt-8 sm:mt-12">
 
-          {/* Total Orders */}
-          <div className="group bg-[#E0E0E0] backdrop-blur-xl rounded-3xl shadow-xl p-6 sm:p-8 text-center border border-pink-400 hover:border-pink-400/50 transition-all duration-500 hover:-translate-y-3 hover:shadow-pink-500/20">
-            <div className="inline-flex items-center justify-center p-3 sm:p-4 bg-pink-500/20 rounded-2xl mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300">
+          {/* Pending */}
+          <div className="group backdrop-blur-xl rounded-3xl shadow-xl p-6 sm:p-8 text-center border border-pink-400 hover:border-pink-400/50 transition-all duration-500 hover:-translate-y-3 hover:shadow-pink-500/20">
+            <div className="inline-flex items-center justify-center p-3 sm:p-4 bg-pink-400/20 rounded-2xl mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300">
               <FiPackage className="text-2xl sm:text-3xl text-pink-300" />
             </div>
 
             <div className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent mb-2 sm:mb-3">
-              {orders.length}
+             {orders.filter(order => order.status === 'Pending').length}
             </div>
 
-            <div className="text-[#1E1E1E] text-lg sm:text-xl font-semibold mb-4">Total Orders</div>
+            <div className="text-[#1E1E1E] text-lg sm:text-xl font-semibold mb-4">Pending</div>
 
             <div className="w-full bg-white/10 rounded-full h-2">
-              <div className="h-2 rounded-full w-full bg-gradient-to-r from-pink-400 to-purple-400 transition-all duration-1000"></div>
-            </div>
-
-            <div className="mt-4 text-xs sm:text-sm text-[#1E1E1E]">All-time packages</div>
-          </div>
-
-          {/* Delivered */}
-          <div className="group bg-white/5 backdrop-blur-xl rounded-3xl shadow-xl p-6 sm:p-8 text-center border border-green-400 hover:border-green-400/50 transition-all duration-500 hover:-translate-y-3 hover:shadow-green-500/20">
-            <div className="inline-flex items-center justify-center p-3 sm:p-4 bg-green-400/20 rounded-2xl mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300">
-              <FiCheckCircle className="text-2xl sm:text-3xl text-green-300" />
-            </div>
-
-            <div className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent mb-2 sm:mb-3">
-              {orders.filter(order => order.status === 'Completed').length}
-            </div>
-
-            <div className="text-[#1E1E1E] text-lg sm:text-xl font-semibold mb-4">Completed</div>
-
-            <div className="w-full bg-white/10 rounded-full h-2">
-              <div 
-                className="h-2 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 transition-all duration-1000"
-                style={{
+              <div className="h-2 rounded-full w-full bg-gradient-to-r from-pink-400 to-purple-400 transition-all duration-1000"
+              style={{
                   width: `${
                     orders.length > 0
-                      ? (orders.filter(order => order.status === 'Completed').length / orders.length) * 100
+                      ? (orders.filter(order => order.status === 'Pending').length / orders.length) * 100
                       : 0
                     }%`
-                }}
-              ></div>
+                }}></div>
             </div>
 
-            <div className="mt-4 text-xs sm:text-sm text-[#1E1E1E]">Successfully completed</div>
+            <div className="mt-4 text-xs sm:text-sm text-[#1E1E1E]">Pending Your Order</div>
           </div>
 
           {/* In Progress */}
@@ -343,6 +318,36 @@ const MyOrdersPage = () => {
 
             <div className="mt-4 text-xs sm:text-sm text-[#1E1E1E]">Currently shipping</div>
           </div>
+
+          {/* Complete */}
+          <div className="group bg-white/5 backdrop-blur-xl rounded-3xl shadow-xl p-6 sm:p-8 text-center border border-green-400 hover:border-green-400/50 transition-all duration-500 hover:-translate-y-3 hover:shadow-green-500/20">
+            <div className="inline-flex items-center justify-center p-3 sm:p-4 bg-green-400/20 rounded-2xl mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300">
+              <FiCheckCircle className="text-2xl sm:text-3xl text-green-300" />
+            </div>
+
+            <div className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent mb-2 sm:mb-3">
+              {orders.filter(order => order.status === 'Completed').length}
+            </div>
+
+            <div className="text-[#1E1E1E] text-lg sm:text-xl font-semibold mb-4">Completed</div>
+
+            <div className="w-full bg-white/10 rounded-full h-2">
+              <div 
+                className="h-2 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 transition-all duration-1000"
+                style={{
+                  width: `${
+                    orders.length > 0
+                      ? (orders.filter(order => order.status === 'Completed').length / orders.length) * 100
+                      : 0
+                    }%`
+                }}
+              ></div>
+            </div>
+
+            <div className="mt-4 text-xs sm:text-sm text-[#1E1E1E]">Successfully completed</div>
+          </div>
+
+          
 
         </div>
 
