@@ -1,121 +1,131 @@
-import Job from "../modules/job.js";
+import Job1 from "../modules/job1.js";
 import nodemailer from "nodemailer";
 
-// export function createJob(req, res){
-//     if (req.user== null){
-//         res.status(403).json({
-//             message: "You need to login first"
-//         });
-//         return;
-//     }
-//     // if (req.user.role != "admin"){
-//     //     res.status(403).json({
-//     //         message: "You are not authorized to create a job"
-//     //     });
-//     //     return;
-//     // }
+    export const createJob = async (req, res) => {
+        try {
+            // ============================
+            // AUTO-GENERATE JOB ID
+            // ============================
+            const jobs = await Job1.find();
+            let highestNumber = 0;
 
-//     const job = new Job(req.body);
-
-//     job.save().then(() => {
-//         res.json({
-//             message: "Job created successfully",
-//         });
-//     }).catch((err) => {
-//         res.status(500).json({
-//             message: "Error creating job",
-//             error: err.message
-//         });
-//     });
-// }
-
-export const createJob = async (req, res) => {
-    try {
-        // get all jobs
-        const jobs = await Job.find();
-
-        let highestNumber = 0;
-
-        jobs.forEach(job => {
-            if (job.jobID && job.jobID.startsWith("J")) {
-                const numberPart = parseInt(job.jobID.substring(1));
-                if (!isNaN(numberPart) && numberPart > highestNumber) {
-                    highestNumber = numberPart;
+            jobs.forEach(job => {
+                if (job.jobID && job.jobID.startsWith("J")) {
+                    const numberPart = parseInt(job.jobID.substring(1));
+                    if (!isNaN(numberPart) && numberPart > highestNumber) {
+                        highestNumber = numberPart;
+                    }
                 }
+            });
+
+            const nextNumber = highestNumber + 1;
+            const jobID = `J${nextNumber.toString().padStart(3, "0")}`;
+
+            // ============================
+            // VALIDATION
+            // ============================
+
+            // Validate customer details
+            if (!req.body.name || !req.body.email || !req.body.phoneNumber) {
+                return res.status(400).json({ message: "Customer details are required" });
             }
-        });
 
-        const nextNumber = highestNumber + 1;
-        const jobID = `J${nextNumber.toString().padStart(3, "0")}`;
+            // Validate items
+            if (!req.body.items || !Array.isArray(req.body.items) || req.body.items.length === 0) {
+                return res.status(400).json({ message: "At least one job item is required" });
+            }
 
-        const job = new Job({
-            jobID,
-            name: req.body.name,
-            email: req.body.email,
-            phoneNumber: req.body.phoneNumber,
-            details: req.body.details,
-            needDate: req.body.needDate,
-            status: req.body.status || "Pending",
-            images: req.body.images || [],
-        });
+            // Validate each item structure
+            for (let item of req.body.items) {
+                if (!item.type || !["tute", "cover", "other"].includes(item.type)) {
+                    return res.status(400).json({ message: "Invalid item type" });
+                }
+                if (!item.data || typeof item.data !== "object") {
+                    return res.status(400).json({ message: "Each job item must include data" });
+                }
+                if (!item.status) item.status = "Pending"; // default
+            }
 
-        await job.save();
-        res.status(201).json(job);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Failed to create job" });
-    }
-};
+            // ============================
+            // CREATE JOB DOCUMENT
+            // ============================
+            const job = new Job1({
+                jobID,
 
+                // Customer info
+                name: req.body.name,
+                email: req.body.email,
+                phoneNumber: req.body.phoneNumber,
+                jobDate: req.body.jobDate || new Date(),
+                needDate: req.body.needDate || new Date(),
 
-// export function getJob(req, res){
-//     if (req.user == null) {
-//         res.status(403).json({
-//             message: "You need to login first"
-//         });
-//         return;
-//     }
-//     if (req.user.role != "admin") {
-//         res.status(403).json({
-//             message: "You are not authorized to view job"
-//         });
-//         return;
-//     }
+                // MULTIPLE ITEMS
+                items: req.body.items,   // <-- NEW ARRAY
 
-//     Job.find(). then(
-//         (job)=>{
-//             res.json(job)
-//         }
-//     ).catch(
-//         ()=>{
-//             res.status(500).json({
-//                 message : "Job not found"
-//             })
-//         }
-//     )
-//     // USER → return only his jobs
-//     Job.find({ email: req.user.email })
-//         .then((jobs) => res.json(jobs))
-//         .catch(() => res.status(500).json({ message: "Job not found" }));
-// }
-    export function getJob(req, res) {
-        if (!req.user) {
-            return res.status(403).json({ message: "You need to login first" });
+                // Optional
+                details: req.body.details || "",
+                images: req.body.images || [],
+            });
+
+            // ============================
+            // SAVE JOB
+            // ============================
+            await job.save();
+            res.status(201).json(job);
+
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: "Failed to create job" });
         }
+    };
+
+
+    export function getJob(req, res) {
+        // if (!req.user) {
+        //     return res.status(403).json({ message: "You need to login first" });
+        // }
 
         // ADMIN → all jobs
         if (req.user.role === "admin") {
-            Job.find()
+            Job1.find()
                 .then((jobs) => res.json(jobs))
                 .catch(() => res.status(500).json({ message: "Job not found" }));
             return;
         }
 
         // USER → only their jobs
-        Job.find({ email: req.user.email })
+        Job1.find({ email: req.user.email })
             .then((jobs) => res.json(jobs))
             .catch(() => res.status(500).json({ message: "Job not found" }));
     }
+
+    export function getJobById(req, res) {
+        if (!req.user) {
+            return res.status(403).json({ message: "You need to login first" });
+        }
+
+        const jobID = req.params.id; // matches URL param
+
+        Job1.findOne({ jobID: jobID }) // <-- correct field name
+            .then((job) => {
+                if (!job) {
+                    return res.status(404).json({ message: "Job not found" });
+                }
+
+                // Optional: restrict access for non-admin users
+                if (req.user.role !== "admin" && job.email !== req.user.email) {
+                    return res.status(403).json({ message: "You cannot access this job" });
+                }
+
+                res.json(job);
+            })
+            .catch((err) => {
+                console.error(err);
+                res.status(500).json({ message: "Server error", error: err.message });
+            });
+    }
+
+
 
     export function deleteJob(req, res){
         if (req.user== null){
@@ -131,7 +141,7 @@ export const createJob = async (req, res) => {
             return;
         }
 
-        Job.findOneAndDelete({
+        Job1.findOneAndDelete({
             jobID: req.params.jobID
         })
         .then(() => {
@@ -153,22 +163,15 @@ export const createJob = async (req, res) => {
             });
             return;
         }
-        // if (req.user.role != "admin") {
-        //     res.status(403).json({
-        //         message: "You are not authorized to update a job"
-        //     });
-        //     return;
-        // }
 
         try {
             console.log('[updateJob] req.params.jobID =', req.params.jobID, 'by user =', req.user?.email || req.user?.name);
-            // Ensure updatedAt and allow updating currentLocation/status
             const updates = {
                 ...req.body,
                 updatedAt: Date.now()
             };
 
-            const updatedJob = await Job.findOneAndUpdate(
+            const updatedJob = await Job1.findOneAndUpdate(
                 { jobID: req.params.jobID },
                 updates,
                 { new: true }
@@ -178,24 +181,6 @@ export const createJob = async (req, res) => {
                 console.warn('[updateJob] job not found for ID', req.params.jobID);
                 return res.status(404).json({ message: 'Job not found' });
             }
-
-            // Emit real-time update to admin panel via Socket.io (if available)
-            // try {
-            //     const io = req.io;
-            //     if (io) {
-            //         io.to('adminPanel').emit('parcelLocationUpdated', {
-            //             parcelID: updatedParcel.parcelID,
-            //             newLocation: updatedParcel.currentLocation || updates.currentLocation,
-            //             status: updatedParcel.status,
-            //             updatedBy: req.user.email || req.user.name || 'system',
-            //             timestamp: updatedParcel.updatedAt || new Date().toISOString()
-            //         });
-            //         console.log('[updateParcel] Emitted parcelLocationUpdated for', updatedParcel.parcelID);
-            //     }
-            // } catch (emitErr) {
-            //     console.warn('Failed to emit parcelLocationUpdated event:', emitErr);
-            // }
-
             res.json({
                 message: "Job updated successfully",
                 data: updatedJob
@@ -208,209 +193,3 @@ export const createJob = async (req, res) => {
         }
     }
 
-// search parcel by ID
-
-
-// export function searchParcel(req, res) {
-//     if (req.user == null) {
-//         res.status(403).json({
-//             message: "You need to login first"
-//         });
-//         return;
-//     }
-
-//     Parcel.findOne({ parcelID: req.params.parcelID })
-//         .then((parcel) => {
-//             if (!parcel) {
-//                 return res.status(404).json({
-//                     message: "Parcel not found !!!"
-//                 });
-//             }
-//             res.json(parcel);
-//         })
-//         .catch((err) => {
-//             res.status(500).json({
-//                 message: "Error retrieving parcel",
-//                 error: err.message
-//             });
-//         });
-// }
-
-// export async function emailParcelDetails(req,res){
-//     const {
-//     parcelID,
-//     name,
-//     email,
-//     address_line1,
-//     city,
-//     district,
-//     details,
-//     estimateDate,
-//     status,
-//   } = req.body;
-
-//   try{
-//     const transport = nodemailer.createTransport({
-//       service: 'gmail',
-//       host: 'smtp.gmail.com',
-//       port: 587,
-//       secure: false,
-//       auth:{
-//         user: "postalmanagement64@gmail.com",
-//         pass: "smdbujtchclirafc"
-//       }
-//     })
-
-//     const subject = `📦 Parcel Confirmation - ${parcelID}`;
-
-//      const message = `
-// Hello ${name},
-
-// Your parcel has been successfully registered in our system. Below are the details:
-
-// 📦 Parcel Information
-// ----------------------------
-// Parcel ID     : ${parcelID}
-// Name          : ${name}
-// Email         : ${email}
-// Address       : ${address_line1}
-// City          : ${city}
-// District      : ${district || "N/A"}
-// Details       : ${details || "N/A"}
-// Estimate Date : ${estimateDate || "Not Provided"}
-// Status        : ${status}
-
-// We will keep you updated as your parcel progresses.
-
-// Thank you,
-// Smart Postal Management System
-// `;
-
-// await transport.sendMail({
-//       from: "postalmanagement64@gmail.com",
-//       to: email,
-//       subject: subject,
-//       text: message, // plain text version
-//       html: `
-//         <h2>📦 Parcel Confirmation</h2>
-//         <p>Hello <strong>${name}</strong>,</p>
-//         <p>Your parcel has been successfully registered in our system. Below are the details:</p>
-//         <table border="1" cellspacing="0" cellpadding="8">
-//           <tr><td><b>Parcel ID</b></td><td>${parcelID}</td></tr>
-//           <tr><td><b>Name</b></td><td>${name}</td></tr>
-//           <tr><td><b>Email</b></td><td>${email}</td></tr>
-//           <tr><td><b>Address</b></td><td>${address_line1}</td></tr>
-//           <tr><td><b>City</b></td><td>${city}</td></tr>
-//           <tr><td><b>District</b></td><td>${district}</td></tr>
-//           <tr><td><b>Details</b></td><td>${details}</td></tr>
-//           <tr><td><b>Estimate Date</b></td><td>${estimateDate || "Not Provided"}</td></tr>
-//           <tr><td><b>Status</b></td><td>${status}</td></tr>
-//         </table>
-//         <p>We will keep you updated as your parcel progresses.</p>
-//         <br>
-//         <p>Thank you,<br>Smart Postal Management System</p>
-//       `,
-//     });
-
-//     res.status(200).json({
-//         message:"Email sent Successfully"
-//     });
-
-//   }catch(err){
-//     console.log("Error sending Email:", err);
-//     res.status(500).json({
-//         message:"Error sending Email",
-//         error: err.message
-//     });
-//   }
-// }
-
-
-// export async function emailUpdatedParcelDetails(req,res){
-//     const {
-//     parcelID,
-//     name,
-//     email,
-//     address_line1,
-//     city,
-//     district,
-//     details,
-//     estimateDate,
-//     status,
-//   } = req.body;
-
-//   try{
-//     const transport = nodemailer.createTransport({
-//       service: 'gmail',
-//       host: 'smtp.gmail.com',
-//       port: 587,
-//       secure: false,
-//       auth:{
-//         user: "postalmanagement64@gmail.com",
-//         pass: "smdbujtchclirafc"
-//       }
-//     })
-
-//     const subject = `📦 Your Parcel Update - ${parcelID} | Status: ${status}`;
-
-//      const message = `
-// Hello ${name},
-
-// Your parcel has been successfully updated in our system. Below are the updated details:
-
-// 📦 Parcel Information
-// ----------------------------
-// Parcel ID     : ${parcelID}
-// Name          : ${name}
-// Email         : ${email}
-// Address       : ${address_line1}
-// City          : ${city}
-// District      : ${district || "N/A"}
-// Details       : ${details || "N/A"}
-// Estimate Date : ${estimateDate || "Not Provided"}
-// Status        : ${status}
-
-// We will keep you updated as your parcel progresses.
-
-// Thank you,
-// Smart Postal Management System
-// `;
-
-// await transport.sendMail({
-//       from: "postalmanagement64@gmail.com",
-//       to: email,
-//       subject: subject,
-//       text: message, // plain text version
-//       html: `
-//         <h2>📦 Parcel Details has been changed</h2>
-//         <p>Hello <strong>${name}</strong>,</p>
-//         <p>Your parcel has been successfully updated in our system. Below are the updated details:</p>
-//         <table border="1" cellspacing="0" cellpadding="8">
-//           <tr><td><b>Parcel ID</b></td><td>${parcelID}</td></tr>
-//           <tr><td><b>Name</b></td><td>${name}</td></tr>
-//           <tr><td><b>Email</b></td><td>${email}</td></tr>
-//           <tr><td><b>Address</b></td><td>${address_line1}</td></tr>
-//           <tr><td><b>City</b></td><td>${city}</td></tr>
-//           <tr><td><b>District</b></td><td>${district}</td></tr>
-//           <tr><td><b>Details</b></td><td>${details}</td></tr>
-//           <tr><td><b>Estimate Date</b></td><td>${estimateDate || "Not Provided"}</td></tr>
-//           <tr><td><b>Status</b></td><td>${status}</td></tr>
-//         </table>
-//         <p>We will keep you updated as your parcel progresses.</p>
-//         <br>
-//         <p>Thank you,<br>Smart Postal Management System</p>
-//       `,
-//     });
-
-//     res.status(200).json({
-//         message:"Email sent Successfully"
-//     });
-
-//   }catch(err){
-//     console.log("Error sending Email:", err);
-//     res.status(500).json({
-//         message:"Error sending Email",
-//         error: err.message
-//     });
-//   }
-// }

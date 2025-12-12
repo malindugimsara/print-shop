@@ -60,19 +60,13 @@ function RegisterPage() {
     <div className="w-full min-h-screen flex flex-col lg:flex-row bg-white overflow-hidden relative">
       {/* Left Section */}
       <div className="w-full lg:w-1/2 flex flex-col justify-center items-center px-6 lg:px-16 py-10 relative">
-        <div className="absolute inset-0 pointer-events-none opacity-20">
-          <div className="absolute top-16 left-10 w-64 h-64 bg-cyan-300/40 rotate-12 blur-3xl rounded-full"></div>
-          <div className="absolute bottom-16 right-16 w-72 h-72 bg-pink-400/40 -rotate-12 blur-3xl rounded-full"></div>
-          <div className="absolute top-1/2 right-1/3 w-52 h-52 bg-yellow-300/40 blur-3xl rounded-full"></div>
-        </div>
-
         <div className="z-10 text-center max-w-md ">
           <div className="flex justify-center mb-6">
-            <img src="logo1.png" alt="logo" className="w-30 md:w-45 md:h-55" />
+            <img src="logo.png" alt="logo" className="w-30 md:w-95 md:h-35" />
           </div>
 
           <h1 className="text-4xl lg:text-6xl font-bold text-gray-800 mb-4">
-            Join <span className="text-pink-600">PrintShop</span>
+            Join <br />
           </h1>
           <p className="hidden md:flex text-gray-600 text-base lg:text-lg mb-8">
             Create your account and start managing your print orders efficiently.
@@ -96,7 +90,7 @@ function RegisterPage() {
       </div>
 
       {/* Right Section (Form) */}
-      <div className="w-full lg:w-1/2 flex justify-center items-center bg-gray-50 px-6 lg:px-10 py-5 md:py-10 relative">
+      <div className="w-full lg:w-1/2 flex justify-center items-center px-6 lg:px-10 py-5 md:py-10 relative">
         {/* ✅ Loading Overlay */}
         {showSpinner && (
           <div className="absolute inset-0 bg-[#2C3E50]/60 backdrop-blur-sm rounded-none flex items-center justify-center z-50 ">

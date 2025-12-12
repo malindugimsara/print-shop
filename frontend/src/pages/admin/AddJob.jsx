@@ -1,189 +1,179 @@
-import { Link, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import React, { useState } from "react";
+import JobHeader from "./AddJob/JobHeader";
+import CustomerInfo from "./AddJob/CustomerInfo";
+import AddJobActions from "./AddJob/AddJobActions";
+import TuteJobItem from "./AddJob/TuteJobItem";
+import CoverPageJobItem from "./AddJob/CoverPageJobItem";
+import OtherJobItem from "./AddJob/OtherJobItem";
 import axios from "axios";
 import toast from "react-hot-toast";
-import mediaUpload from "../utils/mediaupload";
+import { useNavigate } from "react-router-dom";
 
 export default function AddJob() {
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [phoneNumber, setPhoneNumber] = useState("");
-    const [details, setDetails] = useState("");
-    const [needDate, setNeedDate] = useState("");
-    const [status, setStatus] = useState("");
-    const [showSpinner, setShowSpinner] = useState(false);
-    const [images, setImages] = useState([]);
 
-    const navigate = useNavigate();
+  // -----------------------------
+  // CUSTOMER DETAILS
+  // -----------------------------
+  const [customer, setCustomer] = useState({
+    name: "",
+    email: "",
+    phoneNumber: "",
+    jobDate: "",
+    needDate: "",
+  });
 
-    // 🔥 NEW — Fetch user by email
-    const fetchUserByEmail = async (email) => {
-        if (!email.includes("@")) return;
+  // -----------------------------
+  // MULTIPLE ITEMS STATE
+  // -----------------------------
+  const [items, setItems] = useState([]);
+  const [activeIndex, setActiveIndex] = useState(null);
 
-        try {
-            const res = await axios.get(
-                import.meta.env.VITE_BACKEND_URL + `/api/user/email/${email}`
-            );
+  const [showSpinner, setShowSpinner] = useState(false);
 
-            if (!res.data) return;
-
-            setName(res.data.name || "");
-            setPhoneNumber(res.data.phoneNumber || "");
-
-        } catch (error) {
-            console.log("User not found for email:", email);
-        }
+  // -----------------------------
+  // ADD NEW ITEM
+  // -----------------------------
+  const addItem = (type) => {
+    const newItem = {
+      type,
+      data: {},
+      status: "Pending",
     };
 
-    // 🔥 NEW — Auto fetch user 600ms after typing email
-    useEffect(() => {
-        if (!email) return;
+    setItems([...items, newItem]);
+    setActiveIndex(items.length); // open newly added item
+  };
+  const navigate = useNavigate();
 
-        const delay = setTimeout(() => {
-            fetchUserByEmail(email);
-        }, 600);
+  // -----------------------------
+  // UPDATE ITEM DATA
+  // -----------------------------
+  const updateItemData = (index, newData) => {
+    const copy = [...items];
+    copy[index].data = newData;
+    setItems(copy);
+  };
 
-        return () => clearTimeout(delay);
-    }, [email]);
+  // -----------------------------
+  // UPDATE ITEM STATUS
+  // -----------------------------
+  const updateItemStatus = (index, newStatus) => {
+    const copy = [...items];
+    copy[index].status = newStatus;
+    setItems(copy);
+  };
 
-    async function handleAddJob() {
-
-        const promisesArray = [];
-        for (let i = 0; i < images.length; i++) {
-            const promise = mediaUpload(images[i]);
-            promisesArray[i] = promise;
-        }
-
-        try {
-            setShowSpinner(true);
-            const imageUrls = await Promise.all(promisesArray);
-
-            if (!name || !email || !phoneNumber || !details || !needDate || !status) {
-                toast.error("Please fill in all required fields.");
-                setShowSpinner(false);
-                return;
-            }
-
-            const job = {
-                name,
-                email,
-                phoneNumber,
-                details,
-                needDate,
-                status,
-                images: imageUrls
-            };
-
-            const token = localStorage.getItem("token");
-
-            await axios.post(
-                import.meta.env.VITE_BACKEND_URL + "/api/job",
-                job,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-
-            toast.success("Job added successfully!");
-            setShowSpinner(false);
-            navigate("/admin/viewjob", { replace: true });
-        } catch (error) {
-            setShowSpinner(false);
-            toast.error(error.response?.data?.message || "Failed to add job.");
-            console.error("Error adding job:", error);
-        }
+  // -----------------------------
+  // SUBMIT JOB
+  // -----------------------------
+  const submitJob = async () => {
+    if (!customer.name || !customer.email || !customer.phoneNumber) {
+      toast.error("Please fill all customer details");
+      return;
     }
 
-    return (
-        <div className="min-h-screen flex flex-col items-center justify-center">
-            
-            <div className="w-full max-w-lg shadow-2xl rounded-2xl flex flex-col items-center bg-white p-8">
-                <h1 className="text-4xl font-extrabold text-[#2C3E50] mb-8 drop-shadow-lg">Add Job</h1>
+    if (items.length === 0) {
+      toast.error("Please add at least one job item.");
+      return;
+    }
 
-                {/* Email (trigger autofill) */}
-                <label className="w-full text-sm font-semibold text-gray-700 mb-2">Email</label>
-                <input
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full h-12 border border-gray-300 rounded-lg px-4 mb-4"
-                    placeholder="Email"
-                    type="email"
+    const payload = {
+      ...customer,
+      items,
+    };
+
+    try {
+      setShowSpinner(true);
+
+      const res = await axios.post(
+        import.meta.env.VITE_BACKEND_URL + "/api/job",
+        payload
+      );
+
+      toast.success("Job submitted successfully!");
+      navigate("/admin/viewjob")
+      setShowSpinner(false);
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.message || "Failed to submit job");
+      setShowSpinner(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#F8F9FA] py-12 px-6">
+      <div className="max-w-5xl mx-auto bg-white p-10 rounded-2xl shadow-xl border border-gray-200">
+
+        {/* Page Top Header */}
+        <JobHeader />
+
+        {/* Customer Section */}
+        <CustomerInfo customer={customer} setCustomer={setCustomer} />
+
+        {/* ----------------------------- */}
+        {/* RENDER ITEM LIST (TABS) */}
+        {/* ----------------------------- */}
+        {items.length > 0 && (
+          <div className="mt-6 mb-4 flex gap-3 flex-wrap">
+            {items.map((item, index) => (
+              <button
+                key={index}
+                onClick={() => setActiveIndex(index)}
+                className={`px-4 py-2 rounded-lg shadow 
+                  ${activeIndex === index ? "bg-blue-600 text-white" : "bg-gray-200"}`}
+              >
+                {item.type.toUpperCase()} #{index + 1}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* ----------------------------- */}
+        {/* RENDER ACTIVE ITEM FORM */}
+        {/* ----------------------------- */}
+        <div className="mt-6">
+          {activeIndex !== null && (
+            <>
+              {items[activeIndex].type === "tute" && (
+                <TuteJobItem
+                  jobData={items[activeIndex].data}
+                  setJobData={(data) => updateItemData(activeIndex, data)}
+                  status={items[activeIndex].status}
+                  setStatus={(s) => updateItemStatus(activeIndex, s)}
                 />
+              )}
 
-                {/* Name */}
-                <label className="w-full text-sm font-semibold text-gray-700 mb-2">Name</label>
-                <input
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="w-full h-12 border border-gray-300 rounded-lg px-4 mb-4"
-                    placeholder="Name"
-                    type="text"
+              {items[activeIndex].type === "cover" && (
+                <CoverPageJobItem
+                  jobData={items[activeIndex].data}
+                  setJobData={(data) => updateItemData(activeIndex, data)}
+                  status={items[activeIndex].status}
+                  setStatus={(s) => updateItemStatus(activeIndex, s)}
                 />
+              )}
 
-                {/* Phone Number */}
-                <label className="w-full text-sm font-semibold text-gray-700 mb-2">Phone Number</label>
-                <input
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                    className="w-full h-12 border border-gray-300 rounded-lg px-4 mb-4"
-                    placeholder="Phone Number"
-                    type="text"
+              {items[activeIndex].type === "other" && (
+                <OtherJobItem
+                  jobData={items[activeIndex].data}
+                  setJobData={(data) => updateItemData(activeIndex, data)}
+                  status={items[activeIndex].status}
+                  setStatus={(s) => updateItemStatus(activeIndex, s)}
                 />
-
-                {/* Details */}
-                <label className="w-full text-sm font-semibold text-gray-700 mb-2">Details</label>
-                <textarea
-                    value={details}
-                    onChange={(e) => setDetails(e.target.value)}
-                    className="w-full h-20 border border-gray-300 rounded-lg px-4 py-2 mb-4 resize-none"
-                    placeholder="Details"
-                />
-
-                {/* Need Date */}
-                <label className="w-full text-sm font-semibold text-gray-700 mb-2">Need Date</label>
-                <input
-                    value={needDate}
-                    onChange={(e) => setNeedDate(e.target.value)}
-                    className="w-full h-12 border border-gray-300 rounded-lg px-4 mb-4"
-                    type="date"
-                />
-
-                {/* Images */}
-                <label className="w-full text-sm font-semibold text-gray-700 mb-2">Images</label>
-                <input
-                    type="file"
-                    multiple
-                    onChange={(e) => setImages(Array.from(e.target.files))}
-                    className="w-full border rounded-lg px-4 py-2 mb-4"
-                />
-
-                {/* Status */}
-                <label className="w-full text-sm font-semibold text-gray-700 mb-2">Status</label>
-                <select
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value)}
-                    className="w-full h-12 border border-gray-300 rounded-lg px-4 mb-6"
-                >
-                    <option value="" disabled>Select status</option>
-                    <option value="Pending">Pending</option>
-                    <option value="In Progress">In Progress</option>
-                    <option value="Completed">Completed</option>
-                </select>
-
-                <button
-                    onClick={handleAddJob}
-                    className="w-full h-12 bg-blue-600 text-white rounded-lg mb-4"
-                    disabled={showSpinner}
-                >
-                    {showSpinner ? "Adding..." : "Add Job"}
-                </button>
-
-                <Link to={"/admin/"} className="w-full h-12 bg-gray-400 text-center pt-3 rounded-lg">
-                    Cancel
-                </Link>
-            </div>
+              )}
+            </>
+          )}
         </div>
-    );
+
+        {/* ----------------------------- */}
+        {/* ACTION BUTTONS (Add Item + Submit) */}
+        {/* ----------------------------- */}
+        <AddJobActions
+          addItem={addItem}
+          submitJob={submitJob}
+          showSpinner={showSpinner}
+        />
+
+      </div>
+    </div>
+  );
 }

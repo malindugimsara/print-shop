@@ -1,240 +1,255 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
-import mediaUpload from "../utils/mediaupload";
+import { useNavigate, useParams } from "react-router-dom";
+import EditJobHeader from "./EditJob/EditJobHeader";
+import EditCustomerInfo from "./EditJob/EditCustomerInfo";
+import EditTuteJobItem from "./EditJob/EditTuteJobItem";
+import EditCoverPageJobItem from "./EditJob/EditCoverPageJobItem";
+import EditOtherJobItem from "./EditJob/EditOtherJobItem";
+import EditJobActions from "./EditJob/EditJobActions";
 
 export default function EditJob() {
-    const locationData = useLocation();
-    const navigate = useNavigate();
+  const { jobId } = useParams();
+  const navigate = useNavigate();
+ 
+  // -----------------------------
+  // CUSTOMER DETAILS
+  // -----------------------------
+  const [customer, setCustomer] = useState({
+    name: "",
+    email: "",
+    phoneNumber: "",
+    jobDate: "",
+    needDate: "",
+  });
 
-    if (!locationData.state) {
-        toast.error("No job data found.");
-        window.location.href = "/admin/viewjob";
-    }
+  // -----------------------------
+  // MULTIPLE ITEMS STATE
+  // -----------------------------
+  const [items, setItems] = useState([]);
+  const [activeIndex, setActiveIndex] = useState(null);
+  const [showSpinner, setShowSpinner] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-    const jobData = locationData.state;
-
-    const [jobID] = useState(jobData.jobID); // Disabled: not editable
-    const [name, setName] = useState(jobData.name);
-    const [email, setEmail] = useState(jobData.email);
-    const [phoneNumber, setPhoneNumber] = useState(jobData.phoneNumber);
-    const [details, setDetails] = useState(jobData.details);
-    const [needDate, setNeedDate] = useState(jobData.needDate);
-    const [status, setStatus] = useState(jobData.status);
-
-    // ⭐ Correct images handling
-    const [existingImages, setExistingImages] = useState(jobData.images || []);
-    const [newImages, setNewImages] = useState([]);
-
-    const [showSpinner, setShowSpinner] = useState(false);
-
-    // ⭐ Delete old images
-    function handleDeleteImage(index) {
-        const updated = [...existingImages];
-        updated.splice(index, 1);
-        setExistingImages(updated);
-    }
-
-    // ⭐ Submit update
-    async function handleEditJob() {
-        try {
-            setShowSpinner(true);
-
-            // Upload only new image files
-            let uploadedImageUrls = [];
-
-            if (newImages.length > 0) {
-                const uploadPromises = newImages.map((file) => mediaUpload(file));
-                uploadedImageUrls = await Promise.all(uploadPromises);
+  // -----------------------------
+  // FETCH JOB DATA
+  // -----------------------------
+  useEffect(() => {
+    const fetchJob = async () => {
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/job/${jobId}`,
+            {
+                headers: { Authorization: "Bearer " + localStorage.getItem("token") },
             }
+        );
 
-            // Final images = old (remaining) + new uploaded
-            const finalImages = [...existingImages, ...uploadedImageUrls];
+        // axios
+        // .get(import.meta.env.VITE_BACKEND_URL + "/api/job", {
+        //   headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+        // })
+        const job = res.data;
 
-            const updatedJob = {
-                name,
-                email,
-                phoneNumber,
-                details,
-                needDate,
-                status,
-                images: finalImages,
-            };
+        setCustomer({
+          name: job.name,
+          email: job.email,
+          phoneNumber: job.phoneNumber,
+          jobDate: job.jobDate,
+          needDate: job.needDate,
+        });
 
-            const token = localStorage.getItem("token");
+        setItems(job.items || []);
+        setLoading(false);
+      } catch (err) {
+        console.error(err);
+        toast.error("Failed to load job data");
+        setLoading(false);
+      }
+    };
 
-            await axios.put(
-                `${import.meta.env.VITE_BACKEND_URL}/api/job/${jobID}`,
-                updatedJob,
-                {
-                    headers: {
-                        Authorization: "Bearer " + token,
-                    },
-                }
-            );
+    fetchJob();
+  }, [jobId]);
 
-            toast.success("Job updated successfully!");
-            navigate("/admin/viewjob");
-        } catch (error) {
-            console.error(error);
-            toast.error(error.response?.data?.message || "Failed to update job.");
-        } finally {
-            setShowSpinner(false);
-        }
+  // -----------------------------
+  // ADD NEW ITEM
+  // -----------------------------
+  const addItem = (type) => {
+    const newItem = {
+      type,
+      data: {},
+      status: "Pending",
+    };
+
+    setItems([...items, newItem]);
+    setActiveIndex(items.length); // open newly added item
+  };
+
+  // -----------------------------
+  // UPDATE ITEM DATA
+  // -----------------------------
+  const updateItemData = (index, newData) => {
+    const copy = [...items];
+    copy[index].data = newData;
+    setItems(copy);
+  };
+
+  // -----------------------------
+  // UPDATE ITEM STATUS
+  // -----------------------------
+  const updateItemStatus = (index, newStatus) => {
+    const copy = [...items];
+    copy[index].status = newStatus;
+    setItems(copy);
+  };
+
+  // -----------------------------
+  // SUBMIT JOB UPDATE
+  // -----------------------------
+  const updateJob = async () => {
+    if (!customer.name || !customer.email || !customer.phoneNumber) {
+      toast.error("Please fill all customer details");
+      return;
     }
 
-    return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-green-100 p-5">
-            <div className="w-full max-w-lg bg-white shadow-2xl rounded-2xl p-8 flex flex-col items-center">
+    if (items.length === 0) {
+      toast.error("Please add at least one job item.");
+      return;
+    }
 
-                <h1 className="text-4xl font-extrabold text-gray-800 mb-6">
-                    Edit Job
-                </h1>
+    const payload = {
+      ...customer,
+      items,
+    };
 
-                <form className="w-full flex flex-col gap-4">
+    try {
+      setShowSpinner(true);
 
-                    {/* Job ID */}
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">Job ID</label>
-                        <input
-                            disabled
-                            value={jobID}
-                            className="w-full h-12 border bg-gray-200 rounded-lg px-4 text-gray-500 font-semibold"
-                        />
-                    </div>
+      const res = await axios.put(
+        `${import.meta.env.VITE_BACKEND_URL}/api/job/${jobId}`,
+        payload,
+        {
+            headers: { Authorization: "Bearer " + localStorage.getItem("token") }
+        }
+      );
 
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">Name</label>
-                        <input
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            className="w-full h-12 border border-gray-300 rounded-lg px-4"
-                            type="text"
-                            placeholder="Name"
-                        />
-                    </div>
+      toast.success("Job updated successfully!");
+      navigate("/admin/viewjob");
+      setShowSpinner(false);
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.message || "Failed to update job");
+      setShowSpinner(false);
+    }
+};
 
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">Email</label>
-                        <input
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="w-full h-12 border border-gray-300 rounded-lg px-4"
-                            type="email"
-                            placeholder="Email"
-                        />
-                    </div>
+    // -----------------------------
+    // DELETE ITEM
+    // -----------------------------
+    const deleteItem = (index) => {
+    const newItems = items.filter((_, i) => i !== index);
 
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">Phone Number</label>
-                        <input
-                            value={phoneNumber}
-                            onChange={(e) => setPhoneNumber(e.target.value)}
-                            className="w-full h-12 border border-gray-300 rounded-lg px-4"
-                            type="number"
-                            placeholder="Phone Number"
-                        />
-                    </div>
+    setItems(newItems);
 
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">Details</label>
-                        <textarea
-                            value={details}
-                            onChange={(e) => setDetails(e.target.value)}
-                            className="w-full h-20 border border-gray-300 rounded-lg px-4 py-2"
-                            placeholder="Details"
-                        />
-                    </div>
+    // Fix activeIndex
+    if (activeIndex === index) {
+        setActiveIndex(null); // close if deleted tab is active
+    } else if (activeIndex > index) {
+        setActiveIndex(activeIndex - 1); // shift active index if above deleted
+    }
+    };
 
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">Need Date</label>
-                        <input
-                            value={needDate}
-                            onChange={(e) => setNeedDate(e.target.value)}
-                            type="date"
-                            className="w-full h-12 border border-gray-300 rounded-lg px-4"
-                        />
-                    </div>
 
-                    {/* ⭐ Old images preview */}
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">Images</label>
-                        <div className="w-full flex flex-wrap gap-4 mb-4">
-                            {existingImages.map((img, index) => (
-                                <div key={index} className="relative">
-                                    <img
-                                        src={img}
-                                        className="w-24 h-24 object-cover rounded-lg border"
-                                    />
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  }
 
-                                    {/* Delete Button */}
-                                    <button
-                                        type="button"
-                                        onClick={() => handleDeleteImage(index)}
-                                        className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm"
-                                    >
-                                        ✕
-                                    </button>
-                                </div>
-                            ))}
+return (
+    <div className="min-h-screen bg-[#F8F9FA] py-12 px-6">
+      <div className="max-w-5xl mx-auto bg-white p-10 rounded-2xl shadow-xl border border-gray-200">
 
-                            {/* Preview new image files */}
-                            {newImages.map((file, index) => (
-                                <img
-                                    key={"new-" + index}
-                                    src={URL.createObjectURL(file)}
-                                    className="w-24 h-24 object-cover rounded-lg border"
-                                />
-                            ))}
-                        </div>
-                    </div>
+        {/* Page Top Header */}
+        <EditJobHeader />
 
-                    {/* ⭐ Upload new images */}
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">Upload Images</label>
-                        <input
-                            type="file"
-                            multiple
-                            onChange={(e) =>
-                                setNewImages(Array.from(e.target.files))
-                            }
-                            className="w-full border rounded-lg px-4 py-2 mb-4"
-                        />
-                    </div>
+        {/* Customer Section */}
+        <EditCustomerInfo customer={customer} setCustomer={setCustomer} />
 
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">Status</label>
-                        <select
-                            value={status}
-                            onChange={(e) => setStatus(e.target.value)}
-                            className="w-full h-12 border border-gray-300 rounded-lg px-4"
-                        >
-                            <option disabled>Select Status</option>
-                            <option value="Pending">Pending</option>
-                            <option value="In Progress">In Progress</option>
-                            <option value="Completed">Completed</option>
-                        </select>
-                    </div>
+        {/* ----------------------------- */}
+        {/* RENDER ITEM LIST (TABS) */}
+        {/* ----------------------------- */}
+        {items.length > 0 && (
+        <div className="mt-6 mb-4 flex gap-3 flex-wrap">
+            {items.map((item, index) => (
+            <div key={index} className="flex items-center gap-2">
+                
+                {/* Select Tab */}
+                <button
+                onClick={() => setActiveIndex(index)}
+                className={`px-4 py-2 rounded-lg shadow 
+                    ${activeIndex === index ? "bg-blue-600 text-white" : "bg-gray-200"}`}
+                >
+                {item.type.toUpperCase()} #{index + 1}
+                </button>
 
-                    <button
-                        type="button"
-                        onClick={handleEditJob}
-                        className="w-full h-12 bg-green-600 text-white rounded-lg"
-                        disabled={showSpinner}
-                    >
-                        {showSpinner ? "Saving..." : "Save Changes"}
-                    </button>
-
-                    <Link
-                        to="/admin/viewjob"
-                        className="w-full h-12 bg-red-500 text-white rounded-lg flex items-center justify-center"
-                    >
-                        Cancel
-                    </Link>
-
-                </form>
+                {/* Delete Button */}
+                <button
+                onClick={() => deleteItem(index)}
+                className="px-2 py-1 bg-red-500 text-white rounded-md hover:bg-red-600"
+                >
+                X
+                </button>
             </div>
+            ))}
         </div>
-    );
+        )}
+
+
+        {/* ----------------------------- */}
+        {/* RENDER ACTIVE ITEM FORM */}
+        {/* ----------------------------- */}
+        <div className="mt-6">
+          {activeIndex !== null && (
+            <>
+              {items[activeIndex].type === "tute" && (
+                <EditTuteJobItem
+                  jobData={items[activeIndex].data}
+                  setJobData={(data) => updateItemData(activeIndex, data)}
+                  status={items[activeIndex].status}
+                  setStatus={(s) => updateItemStatus(activeIndex, s)}
+                />
+              )}
+
+              {items[activeIndex].type === "cover" && (
+                <EditCoverPageJobItem
+                  jobData={items[activeIndex].data}
+                  setJobData={(data) => updateItemData(activeIndex, data)}
+                  status={items[activeIndex].status}
+                  setStatus={(s) => updateItemStatus(activeIndex, s)}
+                />
+              )}
+
+              {items[activeIndex].type === "other" && (
+                <EditOtherJobItem
+                  jobData={items[activeIndex].data}
+                  setJobData={(data) => updateItemData(activeIndex, data)}
+                  status={items[activeIndex].status}
+                  setStatus={(s) => updateItemStatus(activeIndex, s)}
+                />
+              )}
+            </>
+          )}
+        </div>
+
+        {/* ----------------------------- */}
+        {/* ACTION BUTTONS (Add Item + Update) */}
+        {/* ----------------------------- */}
+        <EditJobActions
+          addItem={addItem}
+          submitJob={updateJob}
+          showSpinner={showSpinner}
+        />
+
+      </div>
+    </div>
+  );
 }

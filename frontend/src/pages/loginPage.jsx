@@ -61,8 +61,6 @@ export default function LoginPage() {
         password: password,
       })
       .then((response) => {
-        toast.success("Login successful!");
-
         const token = response.data.token;
         const user = response.data.user;
 
@@ -80,12 +78,15 @@ export default function LoginPage() {
         switch (user.role?.toLowerCase()) {
           case "admin":
             navigate("/admin");
+            toast.success("Login successful!");
             break;
-          case "user":
-            navigate("/home");
-            break;
+          // case "user":
+          //   navigate("/home");
+          //   toast.success("Login successful!");
+          //   break;
           default:
             toast.error("Unknown role: " + user.role);
+            setShowSpinner(false);
             break;
         }
         localStorage.setItem("name", response.data.user.name);
@@ -109,8 +110,8 @@ export default function LoginPage() {
     <div className="w-full min-h-screen flex flex-col lg:flex-row relative overflow-hidden bg-[#F8F9FA]">
       {/* Left Side - Logo Section */}
       <div className="w-full lg:w-1/2 min-h-[25vh] lg:min-h-[40vh] lg:h-screen flex lg:flex-col items-center justify-center">
-        <img src="logo1.png" alt="logo" className="w-30 lg:w-90 lg:h-90" />
-        <h1 className="text-3xl lg:text-5xl mt-5 font-bold text-[#2C3E50]">PRINT-HUB</h1>
+        <img src="logo.png" alt="logo" className="w-30 lg:w-140 lg:h-50" />
+        <h1 className="text-3xl lg:text-5xl mt-5 font-bold text-[#2C3E50]">CHANNA GRAPHICS</h1>
         <p className="hidden lg:flex mt-1 text-[#1E1E1E]/80 md:text-lg">Your Creative Output, Simplified.</p>
       </div>
 

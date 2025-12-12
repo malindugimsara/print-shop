@@ -14,6 +14,7 @@ import Job from "./admin/Job.jsx";
 import AddJob from "./admin/AddJob.jsx";
 import EditJob from "./admin/EditJob.jsx";
 import JobReportPage from "./admin/JobReportPage.jsx";
+import ViewJob from "./admin/ViewJob.jsx";
 
 export default function AdminPage() {
   const location = useLocation();
@@ -124,7 +125,7 @@ export default function AdminPage() {
           {/* Overlay (mobile) */}
           {menuOpen && (
             <div
-              className="fixed inset-0 bg-black bg-opacity-40 z-30 md:hidden"
+              className="fixed inset-0 bg-opacity-40 z-30 md:hidden"
               onClick={() => setMenuOpen(false)}
             ></div>
           )}
@@ -134,12 +135,12 @@ export default function AdminPage() {
             <Routes>
               <Route path="/" element={<WelcomeAdmin />} />
               <Route path="/addjob" element={<AddJob />} />
-              <Route path="/viewjob" element={<Job />} />
+              <Route path="/viewjob" element={<ViewJob />} />
               <Route path="/users" element={<UsersPage />} />
               <Route path="/report" element={<JobReportPage />} />
               <Route path="/createaccount" element={<CreateAdminAccount />} />
               <Route path="/edituser" element={<EditUser />} />
-              <Route path="/editjob" element={<EditJob />} />
+              <Route path="/editjob/:jobId" element={<EditJob />} />
             </Routes>
           </div>
         </>
