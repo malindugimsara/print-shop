@@ -68,10 +68,10 @@ function UsersPage() {
           <div className="animate-spin rounded-full h-14 w-14 border-4 border-b-white border-blue-500"></div>
         </div>
       ) : (
-        <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="max-w-7xl mx-auto px-4 ">
           {/* Admin Accounts */}
           <section className="mb-16">
-            <h1 className="text-3xl font-extrabold text-center mb-2 text-[#d8232a] tracking-wide">
+            <h1 className="text-3xl font-extrabold text-center mb-5 text-[#d8232a] tracking-wide">
               Admin Accounts
             </h1>
             <hr className="mb-8 border-[#f9a825]" />
@@ -131,7 +131,7 @@ function UsersPage() {
 
           {/* Customer Accounts */}
           <section>
-            <h1 className="text-3xl font-extrabold text-center mb-2 text-[#388e3c] tracking-wide">
+            <h1 className="text-3xl font-extrabold text-center mb-5 text-[#388e3c] tracking-wide">
               Customer Accounts
             </h1>
             <hr className="mb-8 border-[#1976d2]" />

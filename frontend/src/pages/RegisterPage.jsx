@@ -62,10 +62,10 @@ function RegisterPage() {
       <div className="w-full lg:w-1/2 flex flex-col justify-center items-center px-6 lg:px-16 py-10 relative">
         <div className="z-10 text-center max-w-md ">
           <div className="flex justify-center mb-6">
-            <img src="logo.png" alt="logo" className="w-30 md:w-95 md:h-35" />
+            <img src="logo.png" alt="logo" className="w-60 md:w-70 lg:w-95 " />
           </div>
 
-          <h1 className="text-4xl lg:text-6xl font-bold text-gray-800 mb-4">
+          <h1 className="text-4xl lg:text-6xl font-bold text-gray-800 mb-">
             Join <br />
           </h1>
           <p className="hidden md:flex text-gray-600 text-base lg:text-lg mb-8">

@@ -81,109 +81,113 @@ export default function ViewJob() {
     return matchesname && matchesPhonNumber && matchesStatus && matchesDate && matchesJobDate;
   });
 
-  const generatePDF = (jobData) => {
-  if (!jobData) return;
+    const generatePDF = (jobData) => {
+      if (!jobData) return;
 
-  const doc = new jsPDF();
+      const doc = new jsPDF();
 
-  // ✅ Proper Sinhala font register
-  doc.addFileToVFS("NotoSansSinhala.ttf", NotoSinhalaBase64);
-  doc.addFont("NotoSansSinhala.ttf", "NotoSinhala", "normal");
-  doc.setFont("NotoSinhala");
+      // ✅ Proper Sinhala font register
+      doc.addFileToVFS("NotoSansSinhala.ttf", NotoSinhalaBase64);
+      doc.addFont("NotoSansSinhala.ttf", "NotoSinhala", "normal");
+      doc.setFont("NotoSinhala");
 
-  // Header
-  doc.setFontSize(20);
-  doc.setTextColor(40, 116, 166);
-  doc.text("CHANNA GRAPHICS", 20, 20);
+      // Add Logo
+      const logoImage = new Image();
+      logoImage.src = "/logo.png"; // Adjust path as needed
+      doc.addImage(logoImage, "PNG", 20, 10, 55, 23); // x, y, width, height
 
-  doc.setFontSize(16);
-  doc.setTextColor(0, 0, 0);
-  doc.text(`Job Details — ${jobData.jobID}`, 20, 30);
+      // Header
+      doc.setFontSize(25);
+      doc.setTextColor(40, 116, 166);
+      doc.text("CHANNA GRAPHICS", 80, 20);
 
-  doc.setFontSize(12);
-  doc.setTextColor(255, 0, 0);
-  doc.text(
-    `Need Date: ${new Date(jobData.needDate).toLocaleDateString()}`,
-    20,
-    37
-  );
+      doc.setFontSize(16);
+      doc.setTextColor(0, 0, 0);
+      doc.text(`Job Details — ${jobData.jobID}`, 81, 30);
 
-  // Customer Info
-  const customerInfo = [
-    ["Name", jobData.name],
-    ["Email", jobData.email || "-"],
-    ["Phone", jobData.phoneNumber],
-    ["Job Date", new Date(jobData.jobDate).toLocaleDateString()],
-    ["Need Date", new Date(jobData.needDate).toLocaleDateString()],
-  ];
+      doc.setFontSize(14);
+      doc.setTextColor(255, 0, 0);
+      doc.text(
+        `Need Date: ${new Date(jobData.needDate).toLocaleDateString()}`,
+        81,
+        37
+      );
 
-  autoTable(doc, {
-    startY: 45,
-    theme: "grid",
-    head: [["Field", "Value"]],
-    body: customerInfo,
-    styles: {
-      font: "NotoSinhala",
-      fontSize: 11,
-      cellPadding: 3,
-    },
-    headStyles: {
-      fillColor: [40, 116, 166],
-      textColor: [255, 255, 255],
-      font: "NotoSinhala",
-      fontStyle: "normal",
-      fontStyle: "normal",
-    },
-  });
+      // Customer Info
+      const customerInfo = [
+        ["Requested by", jobData.name],
+        ["Email", jobData.email || "-"],
+        ["Phone", jobData.phoneNumber],
+        ["Job Date", new Date(jobData.jobDate).toLocaleDateString()],
+        ["Need Date", new Date(jobData.needDate).toLocaleDateString()],
+      ];
 
-  // Items Table
-  if (jobData.items?.length > 0) {
-    const itemData = jobData.items.map((item, idx) => [
-      idx + 1,
-      item.type || "N/A",
-      item.status || "N/A",
-      Object.entries(item.data || {})
-        .map(([k, v]) => `${k} : ${v}`)
-        .join("\n"),
-    ]);
+      autoTable(doc, {
+        startY: 45,
+        theme: "grid",
+        head: [["Field", "Value"]],
+        body: customerInfo,
+        styles: {
+          font: "NotoSinhala",
+          fontSize: 11,
+          cellPadding: 3,
+        },
+        headStyles: {
+          fillColor: [40, 116, 166],
+          textColor: [255, 255, 255],
+          font: "NotoSinhala",
+          fontStyle: "normal",
+        },
+      });
 
-    autoTable(doc, {
-      startY: doc.lastAutoTable.finalY + 10,
-      head: [["#", "Type", "Status", "Details"]],
-      body: itemData,
-      styles: {
-        font: "NotoSinhala",
-        fontStyle: "normal",
-        fontSize: 11,
-        cellPadding: 2,
-      },
-      headStyles: {
-        fillColor: [40, 116, 166],
-        textColor: [255, 255, 255],
-        font: "NotoSinhala",
-        fontStyle: "normal",
-      },
-    });
-  }
+      // Items Table
+      if (jobData.items?.length > 0) {
+        const itemData = jobData.items.map((item, idx) => [
+          idx + 1,
+          item.type || "N/A",
+          item.status || "N/A",
+          Object.entries(item.data || {})
+            .map(([k, v]) => `${k} : ${v}`)
+            .join("\n"),
+        ]);
 
-  // Footer
-  const pageCount = doc.internal.getNumberOfPages();
-  for (let i = 1; i <= pageCount; i++) {
-    doc.setPage(i);
-    doc.setFont("NotoSinhala");
-    doc.setFontSize(8);
-    doc.setTextColor(128, 128, 128);
-    doc.text(
-      `Page ${i} of ${pageCount} - CHANNA GRAPHICS`,
-      doc.internal.pageSize.getWidth() / 2,
-      doc.internal.pageSize.getHeight() - 10,
-      { align: "center" }
-    );
-  }
+        autoTable(doc, {
+          startY: doc.lastAutoTable.finalY + 10,
+          head: [["#", "Type", "Status", "Details"]],
+          body: itemData,
+          styles: {
+            font: "NotoSinhala",
+            fontStyle: "normal",
+            fontSize: 11,
+            cellPadding: 2,
+          },
+          headStyles: {
+            fillColor: [40, 116, 166],
+            textColor: [255, 255, 255],
+            font: "NotoSinhala",
+            fontStyle: "normal",
+          },
+        });
+      }
 
-  doc.save(`Job-${jobData.jobID}.pdf`);
-  toast.success("PDF generated successfully!");
-};
+      // Footer
+      const pageCount = doc.internal.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFont("NotoSinhala");
+        doc.setFontSize(8);
+        doc.setTextColor(128, 128, 128);
+        doc.text(
+          `Page ${i} of ${pageCount} - CHANNA GRAPHICS`,
+          doc.internal.pageSize.getWidth() / 2,
+          doc.internal.pageSize.getHeight() - 10,
+          { align: "center" }
+        );
+      }
+
+      doc.save(`Job-${jobData.jobID}.pdf`);
+      toast.success("PDF generated successfully!");
+    };
 
 
   return (

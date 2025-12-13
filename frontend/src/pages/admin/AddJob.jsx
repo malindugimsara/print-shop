@@ -109,7 +109,7 @@ export default function AddJob() {
 
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] py-12 px-6">
+    <div className="min-h-screen bg-[#F8F9FA] py-10 px-6">
       <div className="max-w-5xl mx-auto bg-white p-10 rounded-2xl shadow-xl border border-gray-200">
 
         {/* Page Top Header */}
