@@ -124,8 +124,8 @@ export default function ViewJob() {
         item.type || "N/A",
         item.status || "N/A",
         Object.entries(item.data || {})
-          .map(([key, value]) => `${key}: ${value}`)
-          .join("  ,  ") || "N/A",
+          .map(([key, value]) => `${key} : ${value}`)
+          .join("\n") || "N/A",
       ]);
 
       autoTable(doc, {
