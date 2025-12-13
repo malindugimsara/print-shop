@@ -81,7 +81,7 @@ export default function ViewJob() {
     return matchesname && matchesPhonNumber && matchesStatus && matchesDate && matchesJobDate;
   });
 
-    const generatePDF = (jobData) => {
+    const generatePDF = async (jobData) => {
       if (!jobData) return;
 
       const doc = new jsPDF();
@@ -91,10 +91,22 @@ export default function ViewJob() {
       doc.addFont("NotoSansSinhala.ttf", "NotoSinhala", "normal");
       doc.setFont("NotoSinhala");
 
-      // Add Logo
-      const logoImage = new Image();
-      logoImage.src = "/logo.png"; // Adjust path as needed
-      doc.addImage(logoImage, "PNG", 20, 10, 55, 23); // x, y, width, height
+      // Add Logo - fetch and convert to dataURL to ensure it's loaded before adding
+      try {
+        const res = await fetch("/logo.png");
+        if (res.ok) {
+          const blob = await res.blob();
+          const dataUrl = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          });
+          doc.addImage(dataUrl, "PNG", 20, 10, 55, 23);
+        }
+      } catch (err) {
+        console.error("Failed to load logo for PDF", err);
+      }
 
       // Header
       doc.setFontSize(25);

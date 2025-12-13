@@ -85,7 +85,7 @@ function UsersPage() {
                   >
                     <div className="flex items-center min-w-0">
                       <img
-                        src="../../../admin.png"
+                        src="/admin.png"
                         alt="admin"
                         className="w-16 h-16 rounded-full mr-5 border-4 border-[#1976d2] bg-white shadow flex-shrink-0"
                       />
@@ -145,7 +145,7 @@ function UsersPage() {
                   >
                     <div className="flex items-center min-w-0">
                       <img
-                        src="../../../user.png"
+                        src="/user.png"
                         alt="user"
                         className="w-16 h-16 rounded-full mr-5 border-4 border-[#1976d2] bg-white shadow flex-shrink-0"
                       />

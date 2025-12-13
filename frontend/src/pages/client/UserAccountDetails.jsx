@@ -92,7 +92,7 @@ function UsersAccountDetails() {
                     {/* Profile Image */}
                     <div className="flex items-center gap-4 pb-4 border-b border-gray-200">
                       <img
-                        src="../../../user.png"
+                        src="/user.png"
                         alt="User"
                         className="w-20 h-20 rounded-full border-2 border-green-500 shadow-md"
                       />

@@ -32,6 +32,17 @@ export default function LoginPage() {
             console.log(user.email)
 
             localStorage.setItem("email", response.data.user.email);
+            // Persist same user object as regular login so other components can read it
+            localStorage.setItem(
+              "user",
+              JSON.stringify({
+                email: user.email,
+                name: user.name,
+                address: user.address || "",
+                role: user.role || "user",
+              })
+            );
+            localStorage.setItem("name", user.name);
 
             if (user.role === "admin") navigate("/admin");
             else navigate("/home");
@@ -110,7 +121,7 @@ export default function LoginPage() {
     <div className="w-full min-h-screen flex flex-col lg:flex-row relative overflow-hidden bg-[#F8F9FA]">
       {/* Left Side - Logo Section */}
       <div className="w-full lg:w-1/2 min-h-[25vh] lg:min-h-[40vh] lg:h-screen flex lg:flex-col items-center justify-center gap-4">
-        <img src="logo.png" alt="logo" className="w-40 md:w-60 lg:w-140 lg:h-50 ml-5" />
+        <img src="/logo.png" alt="logo" className="w-40 md:w-60 lg:w-140 lg:h-50 ml-5" />
         <h1 className="text-3xl lg:text-5xl mt-5 font-bold text-[#2C3E50]">CHANNA GRAPHICS</h1>
         <p className="hidden lg:flex mt-1 text-[#1E1E1E]/80 md:text-lg">Your Creative Output, Simplified.</p>
       </div>

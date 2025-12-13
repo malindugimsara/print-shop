@@ -74,7 +74,7 @@ export default function AdminPage() {
               {menuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
             </button>
 
-            <img src="logo.png" alt="logo" className="w-30 ml-3"/>
+            <img src="/logo.png" alt="logo" className="w-30 ml-3"/>
 
             <div className="ml-auto flex items-center space-x-2">
               <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-sm font-bold text-white">
@@ -133,7 +133,7 @@ export default function AdminPage() {
           {/* Main content */}
           <div className="flex-1 bg-[#F8F9FA] rounded-xl pt-3 overflow-y-auto md:ml-[260px] mt-16 md:mt-0 shadow-inner px-6 md:px-10 ">
             <div className="flex justify-end mt-2">
-              <img src="logo.png" alt="logo" className="w-40 hidden md:flex" />
+              <img src="/logo.png" alt="logo" className="w-40 hidden md:flex" />
             </div>
             
             <Routes>
