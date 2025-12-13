@@ -13,7 +13,6 @@ const job1Schema = new mongoose.Schema({
 
     email: {
         type: String,
-        required: true
     },
 
     phoneNumber: {

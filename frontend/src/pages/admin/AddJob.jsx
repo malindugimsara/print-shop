@@ -61,7 +61,7 @@ export default function AddJob() {
 
   // SUBMIT JOB
   const submitJob = async () => {
-    if (!customer.name || !customer.email || !customer.phoneNumber) {
+    if (!customer.name || !customer.phoneNumber) {
       toast.error("Please fill all customer details");
       return;
     }

@@ -245,7 +245,7 @@ export default function ViewJob() {
               <tr className="text-center bg-blue-200">
                 <th className="p-4 font-bold">Job ID</th>
                 <th className="p-4 font-bold">Name</th>
-                <th className="p-4 font-bold">Email</th>
+                {/* <th className="p-4 font-bold">Email</th> */}
                 <th className="p-4 font-bold">Phone</th>
                 <th className="p-4 font-bold">Job Date</th>
                 <th className="p-4 font-bold">Need Date</th>
@@ -258,7 +258,7 @@ export default function ViewJob() {
                 <tr key={idx} className="text-center border-b hover:bg-blue-50">
                   <td className="p-4">{job.jobID}</td>
                   <td className="p-4">{job.name}</td>
-                  <td className="p-4">{job.email}</td>
+                  {/* <td className="p-4">{job.email}</td> */}
                   <td className="p-4">{job.phoneNumber}</td>
                   <td className="p-4">{new Date(job.jobDate).toLocaleDateString()}</td>
                   <td className="p-4">{new Date(job.needDate).toLocaleDateString()}</td>

@@ -26,7 +26,7 @@ import nodemailer from "nodemailer";
             // ============================
 
             // Validate customer details
-            if (!req.body.name || !req.body.email || !req.body.phoneNumber) {
+            if (!req.body.name || !req.body.phoneNumber) {
                 return res.status(400).json({ message: "Customer details are required" });
             }
 
@@ -61,10 +61,6 @@ import nodemailer from "nodemailer";
 
                 // MULTIPLE ITEMS
                 items: req.body.items,   // <-- NEW ARRAY
-
-                // Optional
-                details: req.body.details || "",
-                images: req.body.images || [],
             });
 
             // ============================

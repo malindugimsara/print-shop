@@ -7,7 +7,7 @@ export default function CustomerInfo({ customer, setCustomer }) {
     return (
         <div className="grid grid-cols-1 gap-6 mb-10">
 
-            {/* EMAIL */}
+            {/* name */}
             <div>
                 <label className="block font-semibold text-[#2C3E50] mb-2">Customer Name</label>
                 <input
@@ -18,19 +18,8 @@ export default function CustomerInfo({ customer, setCustomer }) {
                 />
             </div>
 
-            {/* Name + Phone + Dates */}
+            {/* email + Phone + Dates */}
             <div className="grid grid-cols-2 gap-6">
-
-                {/* NAME */}
-                <div>
-                    <label className="block font-semibold text-[#2C3E50] mb-2">Customer Email</label>
-                    <input
-                        className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        type="email"
-                        value={customer.email}
-                        onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
-                    />
-                </div>
 
                 {/* PHONE */}
                 <div>
@@ -42,6 +31,17 @@ export default function CustomerInfo({ customer, setCustomer }) {
                         onChange={(e) =>
                             setCustomer({ ...customer, phoneNumber: e.target.value })
                         }
+                    />
+                </div>
+
+                {/* email */}
+                <div>
+                    <label className="block font-semibold text-[#2C3E50] mb-2">Customer Email</label>
+                    <input
+                        className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        type="email"
+                        value={customer.email}
+                        onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
                     />
                 </div>
 
