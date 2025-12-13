@@ -10,8 +10,5 @@ jobRouter.get('/', getJob);
 jobRouter.delete('/:jobID', deleteJob)
 jobRouter.put('/:jobID', updateJob);
 jobRouter.get('/:id', getJobById)
-// parcelRouter.get('/:parcelID', searchParcel);
-// parcelRouter.post('/send-email',emailParcelDetails)
-// parcelRouter.post('/send-update-email',emailUpdatedParcelDetails)
 
 export default jobRouter;

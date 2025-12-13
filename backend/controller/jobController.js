@@ -81,10 +81,7 @@ import nodemailer from "nodemailer";
 
 
     export function getJob(req, res) {
-        // if (!req.user) {
-        //     return res.status(403).json({ message: "You need to login first" });
-        // }
-
+        
         // ADMIN → all jobs
         if (req.user.role === "admin") {
             Job1.find()

@@ -2,13 +2,10 @@ import { Route, Routes } from "react-router-dom"
 import Header from "../components/Header"
 import HomePage from "./client/HomePage"
 import AboutPage from "./client/AboutPage"
-import Test from "./test"
-import UploadFilePage from "./client/UploadFilePage"
 import MyOrdersPage from "./client/MyOrderPage"
 import AddOrder from "./client/AddOrder"
 import PricingPage from "./client/PricingPage"
 import ContactPage from "./client/ContactPage"
-import Test1 from "./client/test"
 import EditOrder from "./client/EditOrder"
 import UsersAccountDetails from "./client/UserAccountDetails"
 import EditAccount from "./client/EditAccount"
@@ -31,8 +28,7 @@ function Home() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/editorder" element={<EditOrder />} />
         <Route path="/editaccount" element={<EditAccount />} />
-         <Route path="/viewaccount" element={<UsersAccountDetails />} />
-        <Route path="/test" element={<Test1 />} />
+        <Route path="/viewaccount" element={<UsersAccountDetails />} />
       </Routes>
       <Footer />
     </div>

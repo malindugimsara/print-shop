@@ -3,7 +3,6 @@ import bcrypt from "bcrypt";
 import jwd from "jsonwebtoken";
 import dotenv from "dotenv";
 import axios from "axios";
-import e from "express";
 import nodemailer from "nodemailer";
 import { OTP } from "../modules/otp.js";
 dotenv.config();
@@ -306,13 +305,6 @@ export function updateUser(req, res) {
     return;
   }
 
-//   if (req.user.role !== "admin") {
-//     res.status(403).json({
-//       message: "You are not authorized to update a user",
-//     });
-//     return;
-//   }
-
   // Assuming you're using MongoDB with Mongoose and User model
   User.findByIdAndUpdate(req.params.userID, req.body, { new: true })
     .then((user) => {
@@ -341,12 +333,7 @@ export function getAllUsers(req, res) {
             message: "You need to login first"
         });
     }
-    // if (req.user.role != "admin") {
-    //     return res.status(403).json({
-    //         message: "You are not authorized to view all users"
-    //     });
-    // }
-
+   
     User.find().then((users) => {
         res.json(users);
     }).catch((err) => {

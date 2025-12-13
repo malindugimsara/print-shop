@@ -13,9 +13,8 @@ export default function EditJob() {
   const { jobId } = useParams();
   const navigate = useNavigate();
  
-  // -----------------------------
+ 
   // CUSTOMER DETAILS
-  // -----------------------------
   const [customer, setCustomer] = useState({
     name: "",
     email: "",
@@ -24,17 +23,16 @@ export default function EditJob() {
     needDate: "",
   });
 
-  // -----------------------------
+ 
+  
   // MULTIPLE ITEMS STATE
-  // -----------------------------
   const [items, setItems] = useState([]);
   const [activeIndex, setActiveIndex] = useState(null);
   const [showSpinner, setShowSpinner] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // -----------------------------
+ 
   // FETCH JOB DATA
-  // -----------------------------
   useEffect(() => {
     const fetchJob = async () => {
       try {
@@ -45,12 +43,7 @@ export default function EditJob() {
             }
         );
 
-        // axios
-        // .get(import.meta.env.VITE_BACKEND_URL + "/api/job", {
-        //   headers: { Authorization: "Bearer " + localStorage.getItem("token") },
-        // })
         const job = res.data;
-
         setCustomer({
           name: job.name,
           email: job.email,
@@ -71,9 +64,8 @@ export default function EditJob() {
     fetchJob();
   }, [jobId]);
 
-  // -----------------------------
+  
   // ADD NEW ITEM
-  // -----------------------------
   const addItem = (type) => {
     const newItem = {
       type,
@@ -85,27 +77,24 @@ export default function EditJob() {
     setActiveIndex(items.length); // open newly added item
   };
 
-  // -----------------------------
+ 
   // UPDATE ITEM DATA
-  // -----------------------------
   const updateItemData = (index, newData) => {
     const copy = [...items];
     copy[index].data = newData;
     setItems(copy);
   };
 
-  // -----------------------------
+ 
   // UPDATE ITEM STATUS
-  // -----------------------------
   const updateItemStatus = (index, newStatus) => {
     const copy = [...items];
     copy[index].status = newStatus;
     setItems(copy);
   };
 
-  // -----------------------------
+  
   // SUBMIT JOB UPDATE
-  // -----------------------------
   const updateJob = async () => {
     if (!customer.name || !customer.email || !customer.phoneNumber) {
       toast.error("Please fill all customer details");
@@ -143,9 +132,8 @@ export default function EditJob() {
     }
 };
 
-    // -----------------------------
+   
     // DELETE ITEM
-    // -----------------------------
     const deleteItem = (index) => {
     const newItems = items.filter((_, i) => i !== index);
 
@@ -174,9 +162,8 @@ return (
         {/* Customer Section */}
         <EditCustomerInfo customer={customer} setCustomer={setCustomer} />
 
-        {/* ----------------------------- */}
+        
         {/* RENDER ITEM LIST (TABS) */}
-        {/* ----------------------------- */}
         {items.length > 0 && (
         <div className="mt-6 mb-4 flex gap-3 flex-wrap">
             {items.map((item, index) => (
@@ -202,11 +189,8 @@ return (
             ))}
         </div>
         )}
-
-
-        {/* ----------------------------- */}
+        
         {/* RENDER ACTIVE ITEM FORM */}
-        {/* ----------------------------- */}
         <div className="mt-6">
           {activeIndex !== null && (
             <>
@@ -240,9 +224,7 @@ return (
           )}
         </div>
 
-        {/* ----------------------------- */}
         {/* ACTION BUTTONS (Add Item + Update) */}
-        {/* ----------------------------- */}
         <EditJobActions
           addItem={addItem}
           submitJob={updateJob}
