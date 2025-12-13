@@ -57,18 +57,18 @@ export default function EditJobActions({ addItem, submitJob, showSpinner }) {
           </button>
         </div>
       )}
-      <div className="w-full flex flex-col gap-3">
+      <div className="flex flex-col gap-3 justify-start md:flex-row md:gap-6">
         {/* Submit Button */}
         <button
           onClick={submitJob}
-          className="w-full bg-blue-500 text-white text-xl py-4 rounded-xl font-bold hover:bg-blue-600"
+          className="w-100 bg-blue-500 text-white text-xl py-4 rounded-xl font-bold hover:bg-blue-600"
           disabled={showSpinner}
         >
           {showSpinner ? "Editing..." : "Edit Job"}
         </button>
         <button
           onClick={closeEditor}
-          className="w-full bg-gray-600 text-white text-xl py-4 rounded-xl font-bold hover:bg-blue-600"
+          className="w-40 bg-gray-600 text-white text-xl py-4 rounded-xl font-bold hover:bg-gray-700"
         >
           Close
         </button>

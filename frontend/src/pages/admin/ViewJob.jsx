@@ -14,11 +14,12 @@ export default function ViewJob() {
   const [fileModalJob, setFileModalJob] = useState(null);
 
   // Filters
-  const [searchEmail, setSearchEmail] = useState("");
+  const [searchPhonNumber, setSearchPhonNumber] = useState("");
   const [searchStatus, setSearchStatus] = useState("");
   const [searchDate, setSearchDate] = useState("");
   const [searchJobID, setSearchJobID] = useState("");
   const [jobDate, setJobDate] = useState("");
+  const [searchName, setSearchName] = useState("");
 
   const navigate = useNavigate();
 
@@ -60,8 +61,8 @@ export default function ViewJob() {
 
   // Filter Jobs
   const filteredJobs = job.filter((job) => {
-    const matchesJobID = job.jobID?.toLowerCase().includes(searchJobID.toLowerCase());
-    const matchesEmail = job.email?.toLowerCase().includes(searchEmail.toLowerCase());
+    const matchesname = job.name?.toLowerCase().includes(searchName.toLowerCase());
+    const matchesPhonNumber = job.phoneNumber?.toLowerCase().includes(searchPhonNumber.toLowerCase());
 
     const matchesStatus = searchStatus
       ? job.items?.some(i => i.status?.toLowerCase() === searchStatus.toLowerCase())
@@ -77,7 +78,7 @@ export default function ViewJob() {
         new Date(jobDate).toLocaleDateString()
       : true;
 
-    return matchesJobID && matchesEmail && matchesStatus && matchesDate && matchesJobDate;
+    return matchesname && matchesPhonNumber && matchesStatus && matchesDate && matchesJobDate;
   });
 
   // PDF generation
@@ -96,8 +97,9 @@ export default function ViewJob() {
     doc.setTextColor(0, 0, 0);
     doc.text(`Job Details — ${jobData.jobID}`, 20, 30);
 
-    doc.setFontSize(10);
-    doc.text(`Generated on: ${currentDate}`, 20, 37);
+    doc.setFontSize(12);
+    doc.setTextColor(255, 0, 0); // Set text color to red
+    doc.text(`Need Date: ${new Date(jobData.needDate).toLocaleDateString()}`, 20, 37);
 
     // Customer Info
     const customerInfo = [
@@ -176,16 +178,16 @@ export default function ViewJob() {
       <div className="flex flex-wrap justify-center gap-3 bg-white p-5 rounded-xl shadow-lg mt-6 border border-blue-100">
         <input
           type="text"
-          placeholder="Search by Job ID"
-          value={searchJobID}
-          onChange={(e) => setSearchJobID(e.target.value)}
+          placeholder="Search by Name"
+          value={searchName}
+          onChange={(e) => setSearchName(e.target.value)}
           className="border border-blue-200 p-3 rounded-lg"
         />
         <input
           type="text"
-          placeholder="Search by Email"
-          value={searchEmail}
-          onChange={(e) => setSearchEmail(e.target.value)}
+          placeholder="Search by Phone Number"
+          value={searchPhonNumber}
+          onChange={(e) => setSearchPhonNumber(e.target.value)}
           className="border border-blue-200 p-3 rounded-lg"
         />
         <select
@@ -225,7 +227,7 @@ export default function ViewJob() {
 
         <button
           onClick={() => {
-            setSearchEmail("");
+            setSearchPhonNumber("");
             setSearchStatus("");
             setSearchDate("");
             setSearchJobID("");
@@ -265,7 +267,7 @@ export default function ViewJob() {
                   <td className="p-4">
                     <button
                       onClick={() => setFileModalJob(job)}
-                      className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded-full"
+                      className="bg-[#48CAE4] hover:bg-[#119dba] text-black px-3 py-1 rounded-full"
                     >
                       View ({job.items?.length})
                     </button>

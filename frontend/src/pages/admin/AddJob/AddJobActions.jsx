@@ -1,8 +1,15 @@
 import { useState } from "react";
 import { FiPlus } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 
 export default function AddJobActions({ addItem, submitJob, showSpinner }) {
   const [showSelector, setShowSelector] = useState(false);
+
+  const navigate = useNavigate();
+  
+  function closeEditor() {
+    navigate("/admin/viewjob");
+  }
 
   return (
     <div className="mt-8 flex flex-col items-center gap-6 relative">
@@ -52,14 +59,25 @@ export default function AddJobActions({ addItem, submitJob, showSpinner }) {
         </div>
       )}
 
-      {/* Submit Button */}
-      <button
-        onClick={submitJob}
-        className="w-full bg-blue-500 text-white text-xl py-4 rounded-xl font-bold hover:bg-blue-600"
-        disabled={showSpinner}
-      >
-        {showSpinner ? "Adding..." : "Add Job"}
-      </button>
+
+      <div className="flex flex-col gap-3 justify-start md:flex-row md:gap-6">
+        {/* Submit Button */}
+          <button
+          onClick={submitJob}
+          className="w-130 bg-blue-500 text-white text-xl py-4 rounded-xl font-bold hover:bg-blue-600"
+          disabled={showSpinner}
+        >
+          {showSpinner ? "Adding..." : "Add Job"}
+        </button>
+
+        <button
+          onClick={closeEditor}
+          className="w-40 bg-gray-600 text-white text-xl py-4 rounded-xl font-bold hover:bg-gray-700"
+        >
+          Close
+        </button>
+      </div>
+
     </div>
   );
 }

@@ -25,7 +25,6 @@ export default function AddJob() {
   // MULTIPLE ITEMS STATE
   const [items, setItems] = useState([]);
   const [activeIndex, setActiveIndex] = useState(null);
-
   const [showSpinner, setShowSpinner] = useState(false);
 
   // ADD NEW ITEM
@@ -94,6 +93,21 @@ export default function AddJob() {
     }
   };
 
+  // DELETE ITEM
+    const deleteItem = (index) => {
+    const newItems = items.filter((_, i) => i !== index);
+
+    setItems(newItems);
+
+    // Fix activeIndex
+    if (activeIndex === index) {
+        setActiveIndex(null); // close if deleted tab is active
+    } else if (activeIndex > index) {
+        setActiveIndex(activeIndex - 1); // shift active index if above deleted
+    }
+    };
+
+
   return (
     <div className="min-h-screen bg-[#F8F9FA] py-12 px-6">
       <div className="max-w-5xl mx-auto bg-white p-10 rounded-2xl shadow-xl border border-gray-200">
@@ -109,14 +123,23 @@ export default function AddJob() {
         {items.length > 0 && (
           <div className="mt-6 mb-4 flex gap-3 flex-wrap">
             {items.map((item, index) => (
-              <button
-                key={index}
-                onClick={() => setActiveIndex(index)}
-                className={`px-4 py-2 rounded-lg shadow 
-                  ${activeIndex === index ? "bg-blue-600 text-white" : "bg-gray-200"}`}
-              >
-                {item.type.toUpperCase()} #{index + 1}
-              </button>
+              <div key={index} className="flex gap-2">
+                <button
+                  onClick={() => setActiveIndex(index)}
+                  className={`px-4 py-2 rounded-lg shadow 
+                    ${activeIndex === index ? "bg-blue-600 text-white" : "bg-gray-200"}`}
+                >
+                  {item.type.toUpperCase()} #{index + 1}
+                </button>
+
+                {/* Delete Button */}
+                <button
+                  onClick={() => deleteItem(index)}
+                  className="px-2 py-1 bg-red-500 text-white rounded-md hover:bg-red-600"
+                >
+                  X
+                </button>
+              </div>
             ))}
           </div>
         )}
