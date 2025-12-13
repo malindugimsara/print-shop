@@ -135,7 +135,7 @@ export default function AddJob() {
                 {/* Delete Button */}
                 <button
                   onClick={() => deleteItem(index)}
-                  className="px-2 py-1 bg-red-500 text-white rounded-md hover:bg-red-600"
+                  className="w-8 h-8 bg-red-500 text-white rounded-4xl hover:bg-red-600"
                 >
                   X
                 </button>
