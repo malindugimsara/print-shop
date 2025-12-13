@@ -113,7 +113,7 @@ export default function ViewJob() {
       theme: 'grid',
       head: [['Field', 'Value']],
       body: customerInfo,
-      styles: { fontSize: 10, cellPadding: 3 },
+      styles: { fontSize: 12, cellPadding: 3 },
       headStyles: { fillColor: [40, 116, 166], textColor: [255, 255, 255] },
     });
 
@@ -132,7 +132,7 @@ export default function ViewJob() {
         startY: doc.lastAutoTable.finalY + 10,
         head: [['#', 'Type', 'Status', 'Details']],
         body: itemData,
-        styles: { fontSize: 9, cellPadding: 2 },
+        styles: { fontSize: 12, cellPadding: 2 },
         headStyles: { fillColor: [40, 116, 166], textColor: [255, 255, 255], fontStyle: 'bold' },
         alternateRowStyles: { fillColor: [245, 245, 245] },
         columnStyles: {

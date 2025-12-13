@@ -4,50 +4,17 @@ import toast from "react-hot-toast";
 
 export default function CustomerInfo({ customer, setCustomer }) {
 
-    // 🔥 Fetch user details by email
-    const fetchUserByEmail = async (email) => {
-        if (!email.includes("@")) return;
-
-        try {
-            const res = await axios.get(
-                `${import.meta.env.VITE_BACKEND_URL}/api/user/email/${email}`
-            );
-
-            if (!res.data) return;
-
-            setCustomer((prev) => ({
-                ...prev,
-                name: res.data.name || "",
-                phoneNumber: res.data.phoneNumber || "",
-            }));
-
-        } catch (error) {
-            console.log("User not found for email:", email);
-        }
-    };
-
-    // 🔥 Auto-fetch user 600ms after typing email
-    useEffect(() => {
-        if (!customer.email) return;
-
-        const delay = setTimeout(() => {
-            fetchUserByEmail(customer.email);
-        }, 600);
-
-        return () => clearTimeout(delay);
-    }, [customer.email]);
-
     return (
         <div className="grid grid-cols-1 gap-6 mb-10">
 
             {/* EMAIL */}
             <div>
-                <label className="block font-semibold text-[#2C3E50] mb-2">Customer Email</label>
+                <label className="block font-semibold text-[#2C3E50] mb-2">Customer Name</label>
                 <input
                     className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    type="email"
-                    value={customer.email}
-                    onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
+                    type="text"
+                    value={customer.name}
+                    onChange={(e) => setCustomer({ ...customer, name: e.target.value })}
                 />
             </div>
 
@@ -56,12 +23,12 @@ export default function CustomerInfo({ customer, setCustomer }) {
 
                 {/* NAME */}
                 <div>
-                    <label className="block font-semibold text-[#2C3E50] mb-2">Customer Name</label>
+                    <label className="block font-semibold text-[#2C3E50] mb-2">Customer Email</label>
                     <input
                         className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        type="text"
-                        value={customer.name}
-                        onChange={(e) => setCustomer({ ...customer, name: e.target.value })}
+                        type="email"
+                        value={customer.email}
+                        onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
                     />
                 </div>
 

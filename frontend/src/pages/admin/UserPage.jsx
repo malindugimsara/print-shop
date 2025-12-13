@@ -83,27 +83,32 @@ function UsersPage() {
                     key={admin._id}
                     className="bg-gradient-to-br from-[#e3f2fd] to-[#bbdefb] shadow-xl rounded-2xl p-5 flex items-center justify-between transition-transform hover:scale-105"
                   >
-                    <div className="flex items-center">
+                    <div className="flex items-center min-w-0">
                       <img
                         src="../../../admin.png"
                         alt="admin"
-                        className="w-16 h-16 rounded-full mr-5 border-4 border-[#1976d2] bg-white shadow"
+                        className="w-16 h-16 rounded-full mr-5 border-4 border-[#1976d2] bg-white shadow flex-shrink-0"
                       />
-                      <div>
-                        <div className="font-bold text-[#1976d2] text-lg">
+
+                      <div className="min-w-0">
+                        <div className="font-bold text-[#1976d2] text-lg truncate">
                           {admin.name}
                         </div>
-                        <div className="text-sm text-gray-700">
+
+                        <div className="text-sm text-gray-700 break-all">
                           {admin.email}
                         </div>
-                        <div className="text-sm text-gray-700">
+
+                        <div className="text-sm text-gray-700 break-all">
                           {admin.phoneNumber}
                         </div>
+
                         <div className="text-xs font-bold text-[#388e3c] mt-2 uppercase tracking-wider">
                           {admin.role}
                         </div>
                       </div>
                     </div>
+
                     <div className="flex flex-col gap-2 items-end">
                       <Link
                         to="/admin/edituser"
@@ -138,27 +143,32 @@ function UsersPage() {
                     key={customer._id}
                     className="bg-gradient-to-br from-[#f1f8e9] to-[#c8e6c9] shadow-xl rounded-2xl p-5 flex items-center justify-between transition-transform hover:scale-105"
                   >
-                    <div className="flex items-center">
+                    <div className="flex items-center min-w-0">
                       <img
                         src="../../../user.png"
-                        alt="User"
-                        className="w-16 h-16 rounded-full mr-5 border-4 border-[#388e3c] bg-white shadow"
+                        alt="user"
+                        className="w-16 h-16 rounded-full mr-5 border-4 border-[#1976d2] bg-white shadow flex-shrink-0"
                       />
-                      <div>
-                        <div className="font-bold text-[#388e3c] text-lg">
+
+                      <div className="min-w-0">
+                        <div className="font-bold text-[#1976d2] text-lg truncate">
                           {customer.name}
                         </div>
-                        <div className="text-sm text-gray-700">
+
+                        <div className="text-sm text-gray-700 break-all">
                           {customer.email}
                         </div>
-                        <div className="text-sm text-gray-700">
+
+                        <div className="text-sm text-gray-700 break-all">
                           {customer.phoneNumber}
                         </div>
-                        <div className="text-xs font-bold text-[#1976d2] mt-2 uppercase tracking-wider">
+
+                        <div className="text-xs font-bold text-[#388e3c] mt-2 uppercase tracking-wider">
                           {customer.role}
                         </div>
                       </div>
                     </div>
+
                     <div className="flex flex-col gap-2 items-end">
                       <Link
                         to="/admin/edituser"
