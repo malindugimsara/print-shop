@@ -9,7 +9,7 @@ export default function CustomerInfo({ customer, setCustomer }) {
 
             {/* name */}
             <div>
-                <label className="block font-semibold text-[#2C3E50] mb-2">Customer Name</label>
+                <label className="block font-semibold text-[#2C3E50] mb-2">Customer Name <span className="text-red-500">*</span> </label>
                 <input
                     className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     type="text"
@@ -23,7 +23,7 @@ export default function CustomerInfo({ customer, setCustomer }) {
 
                 {/* PHONE */}
                 <div>
-                    <label className="block font-semibold text-[#2C3E50] mb-2">Phone Number</label>
+                    <label className="block font-semibold text-[#2C3E50] mb-2">Phone Number <span className="text-red-500">*</span> </label>
                     <input
                         className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         type="tel"
