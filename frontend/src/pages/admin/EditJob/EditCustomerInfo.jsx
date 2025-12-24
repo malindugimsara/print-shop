@@ -12,23 +12,9 @@ export default function EditCustomerInfo({ customer, setCustomer }) {
     return (
         <div className="grid grid-cols-1 gap-6 mb-10">
 
-            {/* EMAIL */}
-            <div>
-                <label className="block font-semibold text-[#2C3E50] mb-2">Customer Email</label>
-                <input
-                    className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    type="email"
-                    value={customer.email}
-                    onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
-                />
-            </div>
-
-            {/* Name + Phone + Dates */}
-            <div className="grid grid-cols-2 gap-6">
-
-                {/* NAME */}
+            {/* NAME */}
                 <div>
-                    <label className="block font-semibold text-[#2C3E50] mb-2">Customer Name</label>
+                    <label className="block font-semibold text-[#2C3E50] mb-2">Customer Name <span className="text-red-500">*</span></label>
                     <input
                         className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         type="text"
@@ -37,9 +23,12 @@ export default function EditCustomerInfo({ customer, setCustomer }) {
                     />
                 </div>
 
+            {/* Email + Phone + Dates */}
+            <div className="grid grid-cols-2 gap-6">
+
                 {/* PHONE */}
                 <div>
-                    <label className="block font-semibold text-[#2C3E50] mb-2">Phone Number</label>
+                    <label className="block font-semibold text-[#2C3E50] mb-2">Phone Number <span className="text-red-500">*</span></label>
                     <input
                         className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         type="tel"
@@ -47,6 +36,17 @@ export default function EditCustomerInfo({ customer, setCustomer }) {
                         onChange={(e) =>
                             setCustomer({ ...customer, phoneNumber: e.target.value })
                         }
+                    />
+                </div>
+
+                {/* EMAIL */}
+                <div>
+                    <label className="block font-semibold text-[#2C3E50] mb-2">Customer Email</label>
+                    <input
+                        className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        type="email"
+                        value={customer.email}
+                        onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
                     />
                 </div>
 

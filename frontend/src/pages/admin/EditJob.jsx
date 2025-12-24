@@ -96,8 +96,8 @@ export default function EditJob() {
   
   // SUBMIT JOB UPDATE
   const updateJob = async () => {
-    if (!customer.name || !customer.email || !customer.phoneNumber) {
-      toast.error("Please fill all customer details");
+    if (!customer.name || !customer.phoneNumber) {
+      toast.error("Please fill require customer details");
       return;
     }
 
