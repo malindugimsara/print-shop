@@ -68,6 +68,7 @@ export default function AddJobActions({ addItem, submitJob, showSpinner }) {
           disabled={showSpinner}
         >
           {showSpinner ? "Adding..." : "Add Job"}
+
         </button>
 
         <button

@@ -29,6 +29,9 @@ import nodemailer from "nodemailer";
             if (!req.body.name || !req.body.phoneNumber) {
                 return res.status(400).json({ message: "Customer details are required" });
             }
+            if (!/^\d{10}$/.test(req.body.phoneNumber)) {
+                return res.status(400).json({ message: "Phone number must be exactly 10 digits" });
+            }
 
             // Validate items
             if (!req.body.items || !Array.isArray(req.body.items) || req.body.items.length === 0) {
@@ -149,39 +152,59 @@ import nodemailer from "nodemailer";
         });
     }
 
-    export async function updateJob(req, res){
-        if (req.user == null) {
-            res.status(403).json({
-                message: "You need to login first"
+    export async function updateJob(req, res) {
+        if (!req.user) {
+            return res.status(403).json({
+            message: "You need to login first"
             });
-            return;
         }
 
         try {
-            console.log('[updateJob] req.params.jobID =', req.params.jobID, 'by user =', req.user?.email || req.user?.name);
+            console.log(
+            "[updateJob] req.params.jobID =",
+            req.params.jobID,
+            "by user =",
+            req.user?.email || req.user?.name
+            );
+
+            // ✅ PHONE NUMBER VALIDATION
+            if (req.body.phoneNumber) {
+            const phone = String(req.body.phoneNumber).trim();
+
+            // Allow only exactly 10 digits
+            if (!/^\d{10}$/.test(phone)) {
+                return res.status(400).json({
+                message: "Phone number must contain exactly 10 digits"
+                });
+            }
+            }
+
             const updates = {
-                ...req.body,
-                updatedAt: Date.now()
+            ...req.body,
+            updatedAt: Date.now()
             };
 
             const updatedJob = await Job1.findOneAndUpdate(
-                { jobID: req.params.jobID },
-                updates,
-                { new: true }
+            { jobID: req.params.jobID },
+            updates,
+            { new: true }
             );
 
             if (!updatedJob) {
-                console.warn('[updateJob] job not found for ID', req.params.jobID);
-                return res.status(404).json({ message: 'Job not found' });
+            console.warn("[updateJob] job not found for ID", req.params.jobID);
+            return res.status(404).json({ message: "Job not found" });
             }
+
             res.json({
-                message: "Job updated successfully",
-                data: updatedJob
+            message: "Job updated successfully",
+            data: updatedJob
             });
+
         } catch (err) {
+            console.error("[updateJob] Error:", err);
             res.status(500).json({
-                message: "Error updating job",
-                error: err.message
+            message: "Error updating job",
+            error: err.message
             });
         }
     }
