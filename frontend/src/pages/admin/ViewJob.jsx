@@ -81,6 +81,7 @@ export default function ViewJob() {
     return matchesname && matchesPhonNumber && matchesStatus && matchesDate && matchesJobDate;
   });
 
+    //Generate pdf
     const generatePDF = async (jobData) => {
       if (!jobData) return;
 
@@ -199,6 +200,138 @@ export default function ViewJob() {
 
       doc.save(`Job-${jobData.jobID}.pdf`);
       toast.success("PDF generated successfully!");
+    };
+
+     //print button
+    const printJob = async (jobData) => {
+      const doc = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: [70, 210], // Bill / Receipt size
+      });
+    
+      // Sinhala font
+      doc.addFileToVFS("NotoSansSinhala.ttf", NotoSinhalaBase64);
+      doc.addFont("NotoSansSinhala.ttf", "NotoSinhala", "normal");
+      doc.setFont("NotoSinhala");
+
+      // Center title
+      doc.setFontSize(16);
+      doc.text("CHANNA GRAPHICS", 35, 10, { align: "center" });
+
+      doc.setFontSize(12);
+      doc.text(`Job ID: ${jobData.jobID}`, 5, 22);
+      doc.text(`Date: ${new Date().toLocaleDateString()}`, 5, 28);
+
+      doc.setFontSize(14);
+      doc.setTextColor(255, 0, 0);
+      doc.text(
+        `Need Date: ${new Date(jobData.needDate).toLocaleDateString()}`,
+        5,
+        38
+      );
+
+      // Add Logo - fetch and convert to dataURL to ensure it's loaded before adding
+      try {
+        const res = await fetch("/logo.png");
+        if (res.ok) {
+          const blob = await res.blob();
+          const dataUrl = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          });
+          doc.addImage(dataUrl, "PNG", 40, 15, 28, 12);
+        }
+      } catch (err) {
+        console.error("Failed to load logo for PDF", err);
+      }
+
+      let y = 45;
+
+      // CUSTOMER INFO
+    
+      doc.setFontSize(11);
+      doc.setTextColor(0, 0, 0);
+      doc.text("Customer Info", 5, y);
+      y += 3;
+      doc.line(5, y, 75, y);
+      y += 5;
+
+      doc.setFontSize(9);
+      doc.text(`Requested by : ${jobData.name}`, 5, y); y += 4;
+      doc.text(`Phone        : ${jobData.phoneNumber}`, 5, y); y += 4;
+      doc.text(`Email        : ${jobData.email || "-"}`, 5, y); y += 4;
+      doc.text(
+      `Job Date     : ${new Date(jobData.jobDate).toLocaleDateString()}`,
+      5,
+      y
+      ); 
+      y += 4;
+      doc.text(
+      `Need Date    : ${new Date(jobData.needDate).toLocaleDateString()}`,
+      5,
+      y
+      );
+      y += 6;
+
+      // ITEMS 
+      jobData.items.forEach((item, index) => {
+      // Page break
+      if (y > 270) {
+        doc.addPage();
+        y = 15;
+      }
+
+      // Item title
+      doc.setFontSize(10);
+      doc.text(
+        `${String(index + 1).padStart(2, "0")}. ${item.type.toUpperCase()}`,
+        5,
+        y
+      );
+      y += 4;
+
+      // Status line
+      doc.setFontSize(9);
+      doc.text(`Status : ${item.status}`, 5, y);
+      y += 4;
+
+      doc.line(5, y, 75, y);
+      y += 3;
+
+      // Item data (dynamic fields)
+      doc.setFontSize(9);
+
+      Object.entries(item.data || {}).forEach(([key, value]) => {
+        if (y > 270) {
+          doc.addPage();
+          y = 15;
+        }
+
+        const label = key
+          .replace(/([A-Z])/g, " $1")
+          .replace(/^./, (c) => c.toUpperCase());
+
+        doc.text(`${label} : ${value}`, 7, y);
+        y += 4;
+      });
+
+      // Bottom divider
+      y += 1;
+      doc.line(5, y, 75, y);
+      y += 4;
+      });
+
+
+      // Print
+      doc.autoPrint();
+      const blobUrl = doc.output("bloburl");
+      const iframe = document.createElement("iframe");
+      iframe.style.display = "none";
+      iframe.src = blobUrl;
+      document.body.appendChild(iframe);
     };
 
 
@@ -396,6 +529,12 @@ export default function ViewJob() {
                 className="bg-blue-500 hover:bg-blue-600 text-white px-5 py-2 rounded font-semibold"
               >
                 Download PDF
+              </button>
+              <button
+                onClick={() => printJob(fileModalJob)}
+                className="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded font-semibold"
+              >
+                Print
               </button>
             </div>
 
