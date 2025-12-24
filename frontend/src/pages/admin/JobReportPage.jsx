@@ -277,7 +277,6 @@ export default function JobReportPage() {
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Job ID</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone Number</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Job Date</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Need Date</th>
                                 </tr>
@@ -288,7 +287,6 @@ export default function JobReportPage() {
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{job.jobID}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{job.name}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{job.phoneNumber}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{job.email}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                             {job.needDate ? new Date(job.jobDate).toLocaleDateString() : "N/A"}
                                         </td>
