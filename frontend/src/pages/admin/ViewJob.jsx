@@ -202,132 +202,136 @@ export default function ViewJob() {
       toast.success("PDF generated successfully!");
     };
 
-     //print button
+    //print button
     const printJob = async (jobData) => {
-      const doc = new jsPDF({
-        orientation: "portrait",
-        unit: "mm",
-        format: [70, 210], // Bill / Receipt size
-      });
-    
-      // Sinhala font
-      doc.addFileToVFS("NotoSansSinhala.ttf", NotoSinhalaBase64);
-      doc.addFont("NotoSansSinhala.ttf", "NotoSinhala", "normal");
-      doc.setFont("NotoSinhala");
+    const doc = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: [70, 210], // Receipt size
+    });
 
-      // Center title
-      doc.setFontSize(16);
-      doc.text("CHANNA GRAPHICS", 35, 10, { align: "center" });
+    /* ---------------- PAGE CONSTANTS ---------------- */
+    const PAGE_WIDTH = 70;
+    const PAGE_HEIGHT = 210;
+    const MARGIN_X = 5;
+    const START_Y = 15;
+    const MAX_TEXT_WIDTH = PAGE_WIDTH - MARGIN_X * 2;
+    const LINE_HEIGHT = 4.5;
 
-      doc.setFontSize(12);
-      doc.text(`Name : ${jobData.name}`, 5, 30);
-      
+    /* ---------------- SINHALA FONT ---------------- */
+    doc.addFileToVFS("NotoSansSinhala.ttf", NotoSinhalaBase64);
+    doc.addFont("NotoSansSinhala.ttf", "NotoSinhala", "normal");
+    doc.setFont("NotoSinhala");
 
-      doc.setFontSize(14);
-      doc.setTextColor(255, 0, 0);
-      doc.text(
-        `Need Date: ${new Date(jobData.needDate).toLocaleDateString()}`,
-        5,
-        37
-      );
+    /* ---------------- TEXT HELPER ---------------- */
+    const writeText = (text, x, y, size = 9) => {
+      doc.setFontSize(size);
+      const lines = doc.splitTextToSize(String(text), MAX_TEXT_WIDTH);
 
-      // Add Logo - fetch and convert to dataURL to ensure it's loaded before adding
-      try {
-        const res = await fetch("/logo.png");
-        if (res.ok) {
-          const blob = await res.blob();
-          const dataUrl = await new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result);
-            reader.onerror = reject;
-            reader.readAsDataURL(blob);
-          });
-          doc.addImage(dataUrl, "PNG", 20, 12, 28, 12);
-        }
-      } catch (err) {
-        console.error("Failed to load logo for PDF", err);
-      }
-
-      let y = 45;
-
-      // CUSTOMER INFO
-    
-      doc.setFontSize(11);
-      doc.setTextColor(0, 0, 0);
-      doc.text("Customer Info", 5, y);
-      y += 3;
-      doc.line(0, y, 75, y);
-      y += 5;
-
-      doc.setFontSize(9);
-      doc.text(`Requested by : ${jobData.name}`, 5, y); y += 4;
-      doc.text(`Phone        : ${jobData.phoneNumber}`, 5, y); y += 4;
-      doc.text(`Email        : ${jobData.email || "-"}`, 5, y); y += 4;
-      doc.text(
-      `Job Date     : ${new Date(jobData.jobDate).toLocaleDateString()}`,
-      5,
-      y
-      ); 
-      y += 4;
-      doc.text(
-      `Need Date    : ${new Date(jobData.needDate).toLocaleDateString()}`,
-      5,
-      y
-      );
-      y += 4;
-
-      doc.line(0, y, 75, y);
-      y += 5;
-
-      // ITEMS 
-      jobData.items.forEach((item, index) => {
-      // Page break
-      if (y > 190) {
-        doc.addPage();
-        y = 15;
-      }
-
-      // Item title
-      doc.setFontSize(10);
-      doc.text(
-        `${String(index + 1).padStart(2, "0")}. ${item.type.toUpperCase()}`,
-        5,
-        y
-      );
-      y += 5;
-
-      // Item data (dynamic fields)
-      doc.setFontSize(9);
-
-      Object.entries(item.data || {}).forEach(([key, value]) => {
-        if (y > 270) {
+      lines.forEach((line) => {
+        if (y > PAGE_HEIGHT - 10) {
           doc.addPage();
-          y = 15;
+          y = START_Y;
         }
+        doc.text(line, x, y);
+        y += LINE_HEIGHT;
+      });
 
+      return y;
+    };
+
+    /* ---------------- TITLE ---------------- */
+    doc.setFontSize(16);
+    doc.text(
+      doc.splitTextToSize("CHANNA GRAPHICS", MAX_TEXT_WIDTH),
+      PAGE_WIDTH / 2,
+      10,
+      { align: "center" }
+    );
+
+    /* ---------------- LOGO ---------------- */
+    try {
+      const res = await fetch("/logo.png");
+      if (res.ok) {
+        const blob = await res.blob();
+        const dataUrl = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+        doc.addImage(dataUrl, "PNG", 20, 12, 28, 12);
+      }
+    } catch (err) {
+      console.error("Logo load failed", err);
+    }
+
+    let y = 35;
+
+    /* ---------------- CUSTOMER INFO ---------------- */
+    doc.setFontSize(11);
+    doc.text("Customer Info", MARGIN_X, y);
+    y += 3;
+    doc.line(0, y, PAGE_WIDTH, y);
+    y += 5;
+
+    y = writeText(`Requested by : ${jobData.name}`, MARGIN_X, y);
+    y = writeText(`Phone        : ${jobData.phoneNumber}`, MARGIN_X, y);
+    y = writeText(`Email        : ${jobData.email || "-"}`, MARGIN_X, y);
+    y = writeText(
+      `Job Date     : ${new Date(jobData.jobDate).toLocaleDateString()}`,
+      MARGIN_X,
+      y
+    );
+    y = writeText(
+      `Need Date    : ${new Date(jobData.needDate).toLocaleDateString()}`,
+      MARGIN_X,
+      y
+    );
+
+    y += 2;
+    doc.line(0, y, PAGE_WIDTH, y);
+    y += 5;
+
+    /* ---------------- ITEMS ---------------- */
+    jobData.items.forEach((item, index) => {
+      if (y > PAGE_HEIGHT - 15) {
+        doc.addPage();
+        y = START_Y;
+      }
+
+      doc.setFontSize(10);
+      y = writeText(
+        `${String(index + 1).padStart(2, "0")}. ${item.type.toUpperCase()}`,
+        MARGIN_X,
+        y,
+        10
+      );
+
+      doc.setFontSize(9);
+      Object.entries(item.data || {}).forEach(([key, value]) => {
         const label = key
           .replace(/([A-Z])/g, " $1")
           .replace(/^./, (c) => c.toUpperCase());
 
-        doc.text(`${label} : ${value}`, 7, y);
-        y += 4;
+        y = writeText(`${label} : ${value}`, MARGIN_X + 2, y);
       });
 
-      // Bottom divider
       y += 1;
-      doc.line(0, y, 75, y);
+      doc.line(0, y, PAGE_WIDTH, y);
       y += 4;
-      });
+    });
 
+    /* ---------------- PRINT ---------------- */
+    doc.autoPrint();
+    const blobUrl = doc.output("bloburl");
 
-      // Print
-      doc.autoPrint();
-      const blobUrl = doc.output("bloburl");
-      const iframe = document.createElement("iframe");
-      iframe.style.display = "none";
-      iframe.src = blobUrl;
-      document.body.appendChild(iframe);
-    };
+    const iframe = document.createElement("iframe");
+    iframe.style.display = "none";
+    iframe.src = blobUrl;
+    document.body.appendChild(iframe);
+  };
+
 
 
   return (
