@@ -220,15 +220,15 @@ export default function ViewJob() {
       doc.text("CHANNA GRAPHICS", 35, 10, { align: "center" });
 
       doc.setFontSize(12);
-      doc.text(`Job ID: ${jobData.jobID}`, 5, 22);
-      doc.text(`Date: ${new Date().toLocaleDateString()}`, 5, 28);
+      doc.text(`Name : ${jobData.name}`, 5, 30);
+      
 
       doc.setFontSize(14);
       doc.setTextColor(255, 0, 0);
       doc.text(
         `Need Date: ${new Date(jobData.needDate).toLocaleDateString()}`,
         5,
-        38
+        37
       );
 
       // Add Logo - fetch and convert to dataURL to ensure it's loaded before adding
@@ -242,7 +242,7 @@ export default function ViewJob() {
             reader.onerror = reject;
             reader.readAsDataURL(blob);
           });
-          doc.addImage(dataUrl, "PNG", 40, 15, 28, 12);
+          doc.addImage(dataUrl, "PNG", 20, 12, 28, 12);
         }
       } catch (err) {
         console.error("Failed to load logo for PDF", err);
@@ -256,7 +256,7 @@ export default function ViewJob() {
       doc.setTextColor(0, 0, 0);
       doc.text("Customer Info", 5, y);
       y += 3;
-      doc.line(5, y, 75, y);
+      doc.line(0, y, 75, y);
       y += 5;
 
       doc.setFontSize(9);
@@ -274,12 +274,15 @@ export default function ViewJob() {
       5,
       y
       );
-      y += 6;
+      y += 4;
+
+      doc.line(0, y, 75, y);
+      y += 5;
 
       // ITEMS 
       jobData.items.forEach((item, index) => {
       // Page break
-      if (y > 195) {
+      if (y > 190) {
         doc.addPage();
         y = 15;
       }
@@ -291,15 +294,7 @@ export default function ViewJob() {
         5,
         y
       );
-      y += 4;
-
-      // Status line
-      doc.setFontSize(9);
-      doc.text(`Status : ${item.status}`, 5, y);
-      y += 4;
-
-      doc.line(5, y, 75, y);
-      y += 3;
+      y += 5;
 
       // Item data (dynamic fields)
       doc.setFontSize(9);
@@ -320,7 +315,7 @@ export default function ViewJob() {
 
       // Bottom divider
       y += 1;
-      doc.line(5, y, 75, y);
+      doc.line(0, y, 75, y);
       y += 4;
       });
 
