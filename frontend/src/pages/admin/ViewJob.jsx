@@ -279,7 +279,7 @@ export default function ViewJob() {
       // ITEMS 
       jobData.items.forEach((item, index) => {
       // Page break
-      if (y > 270) {
+      if (y > 195) {
         doc.addPage();
         y = 15;
       }

@@ -44,6 +44,17 @@ export function saveUser(req, res) {
         isEmailVerified: req.body.isEmailVerified || false // Default isEmailVerified to false
     })
 
+     // ✅ PHONE NUMBER VALIDATION
+    if (req.body.phoneNumber) {
+    const phone = String(req.body.phoneNumber).trim();
+
+    // Allow only exactly 10 digits
+    if (!/^\d{10}$/.test(phone)) {
+        return res.status(400).json({
+        message: "Phone number must contain exactly 10 digits"
+        });
+    }
+    }
 
     user.save().then(()=> {
         res.json({
@@ -99,72 +110,6 @@ export function loginUser(req, res){
             }
         }
     })
-}
-
-export async function googleLogin(req, res) {
-    const accessToken = req.body.accessToken;
-    try {
-        const response = await axios.get("https://www.googleapis.com/oauth2/v3/userinfo", {
-            headers: {
-                Authorization: `Bearer ${accessToken}`
-            }
-        });
-        console.log(response);
-        const user = await User.findOne({ email: response.data.email });
-        if (user == null) {
-            const newUser = new User({
-                email: response.data.email,
-                name: response.data.name,
-                password: accessToken,
-                isEmailVerified : true
-            });
-            await newUser.save();
-            
-            const userData = {
-                email: response.data.email,
-               name: response.data.name,
-                role: "user",
-                phoneNumber: "Not given",
-                isDisable: false,
-                isEmailVerified: true
-            }
-
-            const token = jwd.sign(userData,process.env.JWT_KEY,{
-                expiresIn: "48hrs" // Token
-            })
-            res.json({
-                message: "Login successfully",
-                token: token,
-                user: userData
-            })
-        }
-        else {
-            const userData = {
-                email: user.email,
-                name: user.name,
-                role: user.role,
-                phoneNumber: user.phoneNumber,
-                isDisable: user.isDisable,
-                isEmailVerified: user.isEmailVerified
-            }
-
-            const token = jwd.sign(userData,process.env.JWT_KEY,{
-                expiresIn: "48hrs" // Token
-            })
-            res.json({
-                message: "Login successfully",
-                token: token,
-                user: userData
-            })
-        }
-    }
-    catch (error) {
-        console.error("Error during Google login:", error);
-        res.status(500).json({
-            message: "Error during Google login",
-            error: error.message
-        });
-    }
 }
 
 export function getCurrentUser(req, res) {

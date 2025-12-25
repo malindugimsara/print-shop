@@ -3,8 +3,6 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { VscLoading } from "react-icons/vsc";
-import { FcGoogle } from "react-icons/fc";
-import { useGoogleLogin } from "@react-oauth/google";
 
 export default function LoginPage() {
   const location = useLocation();
@@ -14,47 +12,6 @@ export default function LoginPage() {
   const [showSpinner, setShowSpinner] = useState(false);
   const navigate = useNavigate();
   const [modalIsOpen, setIsOpen] = useState(false);
-  const loginWithGoogle = useGoogleLogin({
-    flow: "implicit",
-    scope: "openid email profile",
-    onSuccess: (res) => {
-        setShowSpinner(true);
-
-        axios.post(import.meta.env.VITE_BACKEND_URL + "/api/user/google", {
-            accessToken: res.access_token,   // NOW it exists
-        })
-        .then((response) => {
-            toast.success("Login successful!");
-
-            localStorage.setItem("token", response.data.token);
-
-            const user = response.data.user;
-            console.log(user.email)
-
-            localStorage.setItem("email", response.data.user.email);
-            // Persist same user object as regular login so other components can read it
-            localStorage.setItem(
-              "user",
-              JSON.stringify({
-                email: user.email,
-                name: user.name,
-                address: user.address || "",
-                role: user.role || "user",
-              })
-            );
-            localStorage.setItem("name", user.name);
-
-            if (user.role === "admin") navigate("/admin");
-            else navigate("/home");
-        })
-        .catch((error) => {
-            console.error("Login failed:", error);
-            toast.error(error.response?.data?.message || "Login failed.");
-            setShowSpinner(false);
-        });
-    }
-});
-
 
   function openModal() {
     setIsOpen(true);
@@ -91,10 +48,6 @@ export default function LoginPage() {
             navigate("/admin");
             toast.success("Login successful!");
             break;
-          // case "user":
-          //   navigate("/home");
-          //   toast.success("Login successful!");
-          //   break;
           default:
             toast.error("Unknown role: " + user.role);
             setShowSpinner(false);
@@ -128,7 +81,7 @@ export default function LoginPage() {
 
       {/* Right Side - Login Form */}
       <div className="w-full lg:w-1/2 flex justify-center items-center px-4 py-6 lg:py-0">
-        <div className="w-full max-w-[400px] bg-white shadow-lg rounded-2xl flex flex-col justify-center items-center p-6 relative border border-[#E0E0E0]">
+        <div className="w-full h-[480px] max-w-[450px] bg-white shadow-lg rounded-2xl flex flex-col justify-center items-center p-10 relative border border-[#E0E0E0]">
           
           {/* Loading Overlay */}
           {showSpinner && (
@@ -164,7 +117,7 @@ export default function LoginPage() {
 
           <div className="w-full text-right mb-4">
             <button
-              className="text-[#2C3E50] hover:text-[#D16BA5] text-sm font-semibold transition-colors duration-300"
+              className="text-[#2C3E50] hover:text-[#D16BA5] text-sm font-semibold transition-colors duration-300 mt-5"
               onClick={() => navigate("/forgotpassword")}
             >
               Forgot password?
@@ -174,37 +127,10 @@ export default function LoginPage() {
           <div className="w-full space-y-4">
             <button
               onClick={handleClick}
-              className="w-full h-11 bg-gradient-to-r from-[#D16BA5] to-[#48CAE4] hover:from-[#C35C9B] hover:to-[#34B8D4] text-white text-sm font-semibold rounded-lg transition-all duration-300 transform hover:scale-[1.02] shadow-md"
+              className="w-full h-11 mt-5 bg-gradient-to-r from-[#D16BA5] to-[#48CAE4] hover:from-[#C35C9B] hover:to-[#34B8D4] text-white text-sm font-semibold rounded-lg transition-all duration-300 transform hover:scale-[1.02] shadow-md"
             >
               Sign In
             </button>
-
-            {/* Divider */}
-            <div className="flex items-center my-2">
-              <div className="flex-1 border-t border-[#E0E0E0]"></div>
-              <span className="px-4 text-[#2C3E50]/70 text-sm">or</span>
-              <div className="flex-1 border-t border-[#E0E0E0]"></div>
-            </div>
-
-            {/* Google Sign In Button */}
-            <button className="w-full h-11 bg-gradient-to-r from-green-400 to-[#48CAE4] border border-[#E0E0E0] hover:bg-[#F8F9FA] text-[#2C3E50] text-sm font-semibold rounded-lg transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center space-x-3"
-            onClick={loginWithGoogle}>
-              <FcGoogle className="text-2xl" />
-              <span>Sign in with Google</span>
-            </button>
-          </div>
-
-          {/* Register Link */}
-          <div className="text-center mt-6">
-            <p className="text-[#2C3E50]/80 text-sm">
-              Don’t have an account?
-              <Link
-                to={"/register"}
-                className="ml-2 text-[#48CAE4] hover:text-[#D16BA5] font-semibold transition-colors duration-300 hover:underline"
-              >
-                Register
-              </Link>
-            </p>
           </div>
         </div>
       </div>

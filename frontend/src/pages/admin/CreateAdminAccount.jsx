@@ -39,7 +39,7 @@ export default function CreateAdminAccount() {
             email: formData.email,
             address: formData.address,
             phoneNumber: formData.phoneNumber,
-            role: formData.role,
+            role:"admin",
             password: formData.password,
             isDisable: formData.isDisable,
             isEmailVerified: formData.isEmailVerified
@@ -63,7 +63,6 @@ export default function CreateAdminAccount() {
             email: "",
             address: "",
             phoneNumber: "",
-            role: "user",
             password: "",
             confirmPassword: "",
             isDisable: false,
@@ -110,28 +109,35 @@ export default function CreateAdminAccount() {
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                        <label className="block font-semibold text-[#2C3E50] mb-2">
+                            Phone Number 
+                        </label>
+
                         <input
-                            name="phoneNumber"
+                            type="tel"
+                            maxLength={10}
+                            className={`w-full rounded-lg px-4 py-2 focus:outline-none focus:ring-2 transition
+                            ${
+                                formData.phoneNumber.length === 0 ||
+                                formData.phoneNumber.length === 10
+                                ? "border border-gray-300 focus:ring-blue-500"
+                                : "border border-red-500 focus:ring-red-500"
+                            }`}
                             value={formData.phoneNumber}
-                            onChange={handleChange}
-                            type="text"
+                            onChange={(e) => {
+                            const value = e.target.value.replace(/[^0-9]/g, "");
+                            setFormData({ ...formData, phoneNumber: value });
+                            }}
                             placeholder="Phone Number"
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 transition"
+                            required
                         />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
-                        <select
-                            name="role"
-                            value={formData.role}
-                            onChange={handleChange}
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 transition bg-white"
-                        >
-                            <option value="">Select Role</option>
-                            <option value="user">User</option>
-                            <option value="admin">Admin</option>
-                        </select>
+
+                        {formData.phoneNumber.length > 0 &&
+                            formData.phoneNumber.length !== 10 && (
+                            <p className="text-red-500 text-sm mt-1">
+                                Phone number must be exactly 10 digits
+                            </p>
+                            )}
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>

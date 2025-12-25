@@ -2,7 +2,6 @@ import { useState } from 'react'
 import './App.css'
 import LoginPage from './pages/loginPage'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import RegisterPage from './pages/RegisterPage'
 import { Toaster } from 'react-hot-toast'
 import AdminPage from './pages/AdminPage'
 import { GoogleOAuthProvider } from '@react-oauth/google'
@@ -19,7 +18,6 @@ function App() {
 
         <Routes path='/*'>
           <Route path='/login' element={<LoginPage/>}/>
-          <Route path='/register' element={<RegisterPage/>}/>
           <Route path='/' element={<LoginPage/>}/>
           <Route path="/admin/*" element={<AdminPage />} />
           <Route path='/forgotpassword' element={<ForgotPassword />}/>
