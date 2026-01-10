@@ -1,4 +1,4 @@
-import OtherCover from "../modules/cover.js";
+import OtherCover from "../modules/otherCover.js";
 
 export const getAllOtherCovers = async (req, res) => {
   try {

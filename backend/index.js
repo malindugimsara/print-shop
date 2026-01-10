@@ -32,7 +32,7 @@ app.use("/api/user", userRouter);
 app.use("/api/job", jobRouter);
 app.use("/api/customer", customerRouter);
 app.use("/api/cover", coverRouter);
-app.use("/api/otherCover", otherCoverRouter);
+app.use("/api/othercover", otherCoverRouter);
 app.use("/api/innerpage", innerPageRouter);
 
 app.listen(3000, () => {
