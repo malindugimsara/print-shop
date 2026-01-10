@@ -332,6 +332,17 @@ export default function ViewJob() {
     document.body.appendChild(iframe);
   };
 
+    const getItemStatusSummary = (job) => {
+      const summary = { Pending: 0, "In Progress": 0, Completed: 0 };
+
+      job.items?.forEach(item => {
+        if (summary[item.status] !== undefined) {
+          summary[item.status]++;
+        }
+      });
+
+      return summary;
+    };
 
 
   return (
@@ -421,6 +432,7 @@ export default function ViewJob() {
                 <th className="p-4 font-bold">Phone</th>
                 <th className="p-4 font-bold">Job Date</th>
                 <th className="p-4 font-bold">Need Date</th>
+                <th className="p-4 font-bold">Status</th>
                 <th className="p-4 font-bold">Items</th>
                 <th className="p-4 font-bold">Action</th>
               </tr>
@@ -430,10 +442,27 @@ export default function ViewJob() {
                 <tr key={idx} className="text-center border-b hover:bg-blue-50">
                   <td className="p-4">{job.jobID}</td>
                   <td className="p-4">{job.name}</td>
-                  {/* <td className="p-4">{job.email}</td> */}
                   <td className="p-4">{job.phoneNumber}</td>
                   <td className="p-4">{new Date(job.jobDate).toLocaleDateString()}</td>
                   <td className="p-4">{new Date(job.needDate).toLocaleDateString()}</td>
+                  <td className="p-4 space-y-2 text-sm text-left">
+                    {Object.entries(getItemStatusSummary(job)).map(([status, count]) =>
+                      count > 0 && (
+                        <div
+                          key={status}
+                          className={`w-fit px-3 py-1 rounded text-black text-xs font-semibold shadow rounded-full ${
+                            status === "Completed"
+                              ? "bg-green-500"
+                              : status === "In Progress"
+                              ? "bg-yellow-500"
+                              : "bg-red-500"
+                          }`}
+                        >
+                          {status} ({count})
+                        </div>
+                      )
+                    )}
+                  </td>
                   <td className="p-4">
                     <button
                       onClick={() => setFileModalJob(job)}

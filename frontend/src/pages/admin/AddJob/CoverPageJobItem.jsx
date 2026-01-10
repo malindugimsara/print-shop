@@ -3,7 +3,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { MdOutlineDeleteOutline, MdOutlineEdit } from "react-icons/md";
 
-export default function CoverPageJobItem({ jobData, setJobData, status, setStatus }) {
+export default function CoverPageJobItem({ jobData, setJobData, status, setStatus, index }) {
   const [coverItems, setCoverItems] = useState([]);
   const [newCover, setNewCover] = useState("");
   const [showCoverInput, setShowCoverInput] = useState(false);
@@ -12,10 +12,7 @@ export default function CoverPageJobItem({ jobData, setJobData, status, setStatu
   const [editingId, setEditingId] = useState(null);
   const [selectedCover, setSelectedCover] = useState("");
 
-
-
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
-
 
   // Load covers from backend
   const token = localStorage.getItem("token");
@@ -177,7 +174,8 @@ export default function CoverPageJobItem({ jobData, setJobData, status, setStatu
               <label key={s} className="flex items-center gap-2">
                 <input
                   type="radio"
-                  name="size"
+                  name={`size-${index}`}
+                  checked={jobData?.size === s}
                   onChange={() => handleChange("size", s)}
                 />
                 {s}
@@ -191,6 +189,7 @@ export default function CoverPageJobItem({ jobData, setJobData, status, setStatu
           <input
             type="number"
             className="w-full p-2 border rounded"
+            value={jobData?.quantity || ""} 
             onChange={(e) => handleChange("quantity", e.target.value)}
           />
         </div>
@@ -202,6 +201,7 @@ export default function CoverPageJobItem({ jobData, setJobData, status, setStatu
         <input
           type="text"
           className="w-full p-2 border rounded"
+          value={jobData?.title || ""}
           onChange={(e) => handleChange("title", e.target.value)}
         />
       </div>
@@ -311,6 +311,8 @@ export default function CoverPageJobItem({ jobData, setJobData, status, setStatu
         <textarea
           rows="5"
           className="w-full p-2 border rounded"
+          placeholder="Write job description..."
+          value={jobData?.description || ""}
           onChange={(e) => handleChange("description", e.target.value)}
         />
       </div>
@@ -323,7 +325,8 @@ export default function CoverPageJobItem({ jobData, setJobData, status, setStatu
                 <label key={s} className="flex items-center cursor-pointer p-2 rounded hover:bg-blue-50 transition">
                     <input
                         type="radio"
-                        name="size"
+                        name={`jobStatus-${index}`}
+                        checked={status === s}
                         className="mr-2 cursor-pointer w-4 h-4"
                         onChange={() => handleStatusChange(s)}
                     />

@@ -45,18 +45,28 @@ export default function AddJob() {
   // UPDATE ITEM DATA
   
   const updateItemData = (index, newData) => {
-    const copy = [...items];
-    copy[index].data = newData;
-    setItems(copy);
+    setItems(prev =>
+      prev.map((item, i) =>
+        i === index
+          ? { ...item, data: { ...newData } } // ✅ NEW OBJECT
+          : item
+      )
+    );
   };
+
 
   
   // UPDATE ITEM STATUS
   const updateItemStatus = (index, newStatus) => {
-    const copy = [...items];
-    copy[index].status = newStatus;
-    setItems(copy);
+    setItems(prev =>
+      prev.map((item, i) =>
+        i === index
+          ? { ...item, status: newStatus }
+          : item
+      )
+    );
   };
+
 
   // SUBMIT JOB
   const submitJob = async () => {
@@ -150,6 +160,7 @@ export default function AddJob() {
             <>
               {items[activeIndex].type === "tute" && (
                 <TuteJobItem
+                  index={activeIndex}
                   jobData={items[activeIndex].data}
                   setJobData={(data) => updateItemData(activeIndex, data)}
                   status={items[activeIndex].status}

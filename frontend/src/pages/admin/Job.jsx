@@ -291,39 +291,6 @@ export default function Job() {
           </div>
         </div>
       )}
-
-
-
-      {/* QR Code Modal */}
-      {selectdJob && (
-        <div className="fixed inset-0 bg-blue-100 bg-opacity-40 flex justify-center items-center z-50 p-4 sm:p-0">
-          <div className="bg-white p-6 sm:p-10 rounded-xl text-center shadow-2xl relative w-full max-w-[400px] border-2 border-blue-200">
-            <h2 className="text-2xl font-bold mb-6 text-blue-600">Job QR Code</h2>
-            <QRCodeCanvas value={generateQRData(selectdJob)} size={220} className="mx-auto" />
-            <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3 sm:gap-6 justify-center">
-              <button
-                onClick={() => setSelectedJob(null)}
-                className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg font-semibold transition-all duration-150 shadow"
-              >
-                Close
-              </button>
-              <button
-                onClick={() => {
-                  const canvas = document.querySelector("canvas");
-                  const url = canvas.toDataURL("image/png");
-                  const a = document.createElement("a");
-                  a.href = url;
-                  a.download = `job-${selectdJob.jobID}.png`;
-                  a.click();
-                }}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold transition-all duration-150 shadow"
-              >
-                Download
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

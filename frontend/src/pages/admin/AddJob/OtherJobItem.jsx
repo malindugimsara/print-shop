@@ -3,7 +3,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { MdOutlineDeleteOutline, MdOutlineEdit } from "react-icons/md";
 
-export default function OtherJobItem({ jobData, setJobData, status, setStatus }) {
+export default function OtherJobItem({ jobData, setJobData, status, setStatus, index }) {
   const [coverItems, setCoverItems] = useState([]);
   const [newCover, setNewCover] = useState("");
   const [showCoverInput, setShowCoverInput] = useState(false);
@@ -125,7 +125,8 @@ export default function OtherJobItem({ jobData, setJobData, status, setStatus })
             <label key={s} className="mr-4">
               <input
                 type="radio"
-                name="size"
+                name={`size-${index}`}
+                checked={jobData?.size === s}
                 onChange={() => handleChange("size", s)}
               />{" "}
               {s}
@@ -138,6 +139,7 @@ export default function OtherJobItem({ jobData, setJobData, status, setStatus })
           <input
             type="number"
             className="w-full p-2 border rounded"
+            value={jobData?.quantity || ""}
             onChange={(e) => handleChange("quantity", e.target.value)}
           />
         </div>
@@ -148,6 +150,7 @@ export default function OtherJobItem({ jobData, setJobData, status, setStatus })
         <label className="font-semibold block mb-2">Title</label>
         <input
           className="w-full p-2 border rounded"
+            value={jobData?.title || ""}
           onChange={(e) => handleChange("title", e.target.value)}
         />
       </div>
@@ -162,6 +165,7 @@ export default function OtherJobItem({ jobData, setJobData, status, setStatus })
                 <input
                 type="radio"
                 name="otherCoverType"
+                value={item.name}
                 checked={selectedCover === item.name}
                 onChange={() => {
                     setSelectedCover(item.name);
@@ -239,6 +243,7 @@ export default function OtherJobItem({ jobData, setJobData, status, setStatus })
           rows="4"
           className="w-full p-2 border rounded"
           placeholder="Description"
+            value={jobData?.description || ""}
           onChange={(e) => handleChange("description", e.target.value)}
         />
       </div>
@@ -249,7 +254,8 @@ export default function OtherJobItem({ jobData, setJobData, status, setStatus })
           <label key={s} className="mr-4">
             <input
               type="radio"
-              name="status"
+              name={`jobStatus-${index}`}
+            checked={status === s}
               onChange={() => handleStatusChange(s)}
             />{" "}
             {s}
