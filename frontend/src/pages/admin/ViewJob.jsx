@@ -204,133 +204,167 @@ export default function ViewJob() {
 
     //print button
     const printJob = async (jobData) => {
-    const doc = new jsPDF({
-      orientation: "portrait",
-      unit: "mm",
-      format: [70, 210], // Receipt size
-    });
+  const doc = new jsPDF({
+    orientation: "portrait",
+    unit: "mm",
+    format: [70, 210], // Receipt size
+  });
 
-    /* ---------------- PAGE CONSTANTS ---------------- */
-    const PAGE_WIDTH = 70;
-    const PAGE_HEIGHT = 210;
-    const MARGIN_X = 5;
-    const START_Y = 15;
-    const MAX_TEXT_WIDTH = PAGE_WIDTH - MARGIN_X * 2;
-    const LINE_HEIGHT = 4.5;
+  const PAGE_WIDTH = 70;
+  const PAGE_HEIGHT = 210;
+  const MARGIN_X = 5;
+  const START_Y = 15;
+  const MAX_TEXT_WIDTH = PAGE_WIDTH - MARGIN_X * 2;
+  const LINE_HEIGHT = 4.5;
 
-    /* ---------------- SINHALA FONT ---------------- */
-    doc.addFileToVFS("NotoSansSinhala.ttf", NotoSinhalaBase64);
-    doc.addFont("NotoSansSinhala.ttf", "NotoSinhala", "normal");
-    doc.setFont("NotoSinhala");
+  /* ---------------- SINHALA FONT ---------------- */
+  doc.addFileToVFS("NotoSansSinhala.ttf", NotoSinhalaBase64);
+  doc.addFont("NotoSansSinhala.ttf", "NotoSinhala", "normal");
+  doc.setFont("NotoSinhala");
 
-    /* ---------------- TEXT HELPER ---------------- */
-    const writeText = (text, x, y, size = 9) => {
-      doc.setFontSize(size);
-      const lines = doc.splitTextToSize(String(text), MAX_TEXT_WIDTH);
+  /* ---------------- TEXT HELPER ---------------- */
+  const writeText = (text, x, y, size = 9) => {
+    doc.setFontSize(size);
+    const lines = doc.splitTextToSize(String(text), MAX_TEXT_WIDTH);
 
-      lines.forEach((line) => {
-        if (y > PAGE_HEIGHT - 10) {
-          doc.addPage();
-          y = START_Y;
-        }
-        doc.text(line, x, y);
-        y += LINE_HEIGHT;
-      });
-
-      return y;
-    };
-
-    /* ---------------- TITLE ---------------- */
-    doc.setFontSize(16);
-    doc.text(
-      doc.splitTextToSize("CHANNA GRAPHICS", MAX_TEXT_WIDTH),
-      PAGE_WIDTH / 2,
-      10,
-      { align: "center" }
-    );
-
-    /* ---------------- LOGO ---------------- */
-    try {
-      const res = await fetch("/logo.png");
-      if (res.ok) {
-        const blob = await res.blob();
-        const dataUrl = await new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result);
-          reader.onerror = reject;
-          reader.readAsDataURL(blob);
-        });
-        doc.addImage(dataUrl, "PNG", 20, 12, 28, 12);
-      }
-    } catch (err) {
-      console.error("Logo load failed", err);
-    }
-
-    let y = 35;
-
-    /* ---------------- CUSTOMER INFO ---------------- */
-    doc.setFontSize(11);
-    doc.text("Customer Info", MARGIN_X, y);
-    y += 3;
-    doc.line(0, y, PAGE_WIDTH, y);
-    y += 5;
-
-    y = writeText(`Requested by : ${jobData.name}`, MARGIN_X, y);
-    y = writeText(`Phone        : ${jobData.phoneNumber}`, MARGIN_X, y);
-    y = writeText(`Email        : ${jobData.email || "-"}`, MARGIN_X, y);
-    y = writeText(
-      `Job Date     : ${new Date(jobData.jobDate).toLocaleDateString()}`,
-      MARGIN_X,
-      y
-    );
-    y = writeText(
-      `Need Date    : ${new Date(jobData.needDate).toLocaleDateString()}`,
-      MARGIN_X,
-      y
-    );
-
-    y += 2;
-    doc.line(0, y, PAGE_WIDTH, y);
-    y += 5;
-
-    /* ---------------- ITEMS ---------------- */
-    jobData.items.forEach((item, index) => {
-      if (y > PAGE_HEIGHT - 15) {
+    lines.forEach((line) => {
+      if (y > PAGE_HEIGHT - 10) {
         doc.addPage();
         y = START_Y;
       }
-
-      doc.setFontSize(10);
-      y = writeText(
-        `${String(index + 1).padStart(2, "0")}. ${item.type.toUpperCase()}`,
-        MARGIN_X,
-        y,
-        10
-      );
-
-      doc.setFontSize(9);
-      Object.entries(item.data || {}).forEach(([key, value]) => {
-        const label = key
-          .replace(/([A-Z])/g, " $1")
-          .replace(/^./, (c) => c.toUpperCase());
-
-        y = writeText(`${label} : ${value}`, MARGIN_X + 2, y);
-      });
-
-      y += 1;
-      doc.line(0, y, PAGE_WIDTH, y);
-      y += 4;
+      doc.text(line, x, y);
+      y += LINE_HEIGHT;
     });
 
-    /* ---------------- PRINT ---------------- */
-    doc.autoPrint();
-    const blobUrl = doc.output("bloburl");
-
-    const iframe = document.createElement("iframe");
-    iframe.style.display = "none";
-    iframe.src = blobUrl;
-    document.body.appendChild(iframe);
+    return y;
   };
+
+  /* ---------------- TITLE ---------------- */
+  doc.setFontSize(16);
+  doc.text(
+    doc.splitTextToSize("CHANNA GRAPHICS", MAX_TEXT_WIDTH),
+    PAGE_WIDTH / 2,
+    10,
+    { align: "center" }
+  );
+
+  /* ---------------- LOGO ---------------- */
+  try {
+    const res = await fetch("/logo.png");
+    if (res.ok) {
+      const blob = await res.blob();
+      const dataUrl = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+      doc.addImage(dataUrl, "PNG", 20, 12, 28, 12);
+    }
+  } catch (err) {
+    console.error("Logo load failed", err);
+  }
+
+  let y = 35;
+
+  /* ---------------- CUSTOMER INFO ---------------- */
+  doc.setFontSize(11);
+  doc.text("Customer Info", MARGIN_X, y);
+  y += 3;
+  doc.line(0, y, PAGE_WIDTH, y);
+  y += 5;
+
+  y = writeText(`Requested by : ${jobData.name}`, MARGIN_X, y);
+  y = writeText(`Phone        : ${jobData.phoneNumber}`, MARGIN_X, y);
+  y = writeText(`Email        : ${jobData.email || "-"}`, MARGIN_X, y);
+  y = writeText(
+    `Job Date     : ${new Date(jobData.jobDate).toLocaleDateString()}`,
+    MARGIN_X,
+    y
+  );
+  y = writeText(
+    `Need Date    : ${new Date(jobData.needDate).toLocaleDateString()}`,
+    MARGIN_X,
+    y
+  );
+
+  y += 2;
+  doc.line(0, y, PAGE_WIDTH, y);
+  y += 5;
+
+  /* ---------------- ITEMS ---------------- */
+  jobData.items.forEach((item, index) => {
+    if (y > PAGE_HEIGHT - 15) {
+      doc.addPage();
+      y = START_Y;
+    }
+
+    doc.setFontSize(10);
+    y = writeText(
+      `${String(index + 1).padStart(2, "0")}. ${item.type.toUpperCase()}`,
+      MARGIN_X,
+      y,
+      10
+    );
+
+    doc.setFontSize(9);
+
+    if (item.type === "tute") {
+      const fields = [
+        ["Tute Type", item.data?.tuteType],
+        ["Size", item.data?.size],
+        ["Finishing", item.data?.finishing],
+        ["Quantity", item.data?.quantity],
+        ["Title", item.data?.title],
+        ["Cover", item.data?.coverType],
+        ["Inner Pages", item.data?.innerPage],
+        ["Description", item.data?.description],
+      ];
+
+      fields.forEach(([label, value]) => {
+        y = writeText(`${label} : ${value || "—"}`, MARGIN_X + 2, y);
+      });
+    } else if (item.type === "cover") {
+      const fields = [
+        ["Size", item.data?.size],
+        ["Quantity", item.data?.quantity],
+        ["Title", item.data?.title],
+        ["Cover Type", item.data?.coverType],
+        ["Description", item.data?.description],
+      ];
+
+      fields.forEach(([label, value]) => {
+        y = writeText(`${label} : ${value || "—"}`, MARGIN_X + 2, y);
+      });
+    } else {
+      const fields = [
+        ["Size", item.data?.size],
+        ["Quantity", item.data?.quantity],
+        ["Title", item.data?.title],
+        ["Other Type", item.data?.otherCoverType],
+        ["Description", item.data?.description],
+      ];
+
+      fields.forEach(([label, value]) => {
+        y = writeText(`${label} : ${value || "—"}`, MARGIN_X + 2, y);
+      });
+    }
+
+    y += 1;
+    doc.line(0, y, PAGE_WIDTH, y);
+    y += 4;
+  });
+
+  /* ---------------- PRINT ---------------- */
+  doc.autoPrint();
+  const blobUrl = doc.output("bloburl");
+
+  const iframe = document.createElement("iframe");
+  iframe.style.display = "none";
+  iframe.src = blobUrl;
+  document.body.appendChild(iframe);
+};
+
 
     const getItemStatusSummary = (job) => {
       const summary = { Pending: 0, "In Progress": 0, Completed: 0 };
@@ -519,30 +553,138 @@ export default function ViewJob() {
               <p><b>Need Date:</b> {new Date(fileModalJob.needDate).toLocaleDateString()}</p>
             </div>
 
-            {/* Items */}
-            {fileModalJob.items?.map((item, idx) => (
-              <div key={idx} className="border rounded-lg p-4 mb-4 bg-gray-50">
-                <h3 className="font-bold text-lg text-gray-700">
-                  Item {idx + 1} — <span className="uppercase text-blue-600">{item.type}</span>
-                </h3>
+           {/* Items */}
+<div className="grid gap-4 max-h-[500px] overflow-y-auto">
+  {fileModalJob?.items?.map((item, idx) => (
+    <div key={idx} className="border rounded-lg p-4 bg-gray-50">
+      <h3 className="font-bold text-lg text-gray-700 mb-2">
+        Item {idx + 1} — <span className="uppercase text-blue-600">{item.type || "—"}</span>
+      </h3>
 
-                <p className="mt-1 mb-3">
-                  <b>Status:</b>{" "}
-                  <span className="px-2 py-1 rounded bg-yellow-200">{item.status}</span>
-                </p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {item.type === "tute" && (
+          <>
+            {/* Tute Type */}
+            <div className="p-2 bg-white border rounded shadow-sm">
+              <p className="text-xs text-gray-500 font-semibold">TUTE TYPE</p>
+              <p className="font-medium text-gray-800">{item.data?.tuteType || "—"}</p>
+            </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {Object.entries(item.data || {}).map(([key, value]) => (
-                    <div key={key} className="p-2 bg-white border rounded shadow-sm">
-                      <p className="text-xs text-gray-500 font-semibold">
-                        {key.replace(/([A-Z])/g, " $1").toUpperCase()}
-                      </p>
-                      <p className="font-medium text-gray-800">{value || "—"}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
+            {/* Size */}
+            <div className="p-2 bg-white border rounded shadow-sm">
+              <p className="text-xs text-gray-500 font-semibold">SIZE</p>
+              <p className="font-medium text-gray-800">{item.data?.size || "—"}</p>
+            </div>
+
+            {/* Finishing */}
+            <div className="p-2 bg-white border rounded shadow-sm">
+              <p className="text-xs text-gray-500 font-semibold">FINISHING</p>
+              <p className="font-medium text-gray-800">{item.data?.finishing || "—"}</p>
+            </div>
+
+            {/* Quantity */}
+            <div className="p-2 bg-white border rounded shadow-sm">
+              <p className="text-xs text-gray-500 font-semibold">QUANTITY</p>
+              <p className="font-medium text-gray-800">{item.data?.quantity || "—"}</p>
+            </div>
+
+            {/* Title */}
+            <div className="p-2 bg-white border rounded shadow-sm">
+              <p className="text-xs text-gray-500 font-semibold">TITLE</p>
+              <p className="font-medium text-gray-800">{item.data?.title || "—"}</p>
+            </div>
+
+            {/* Cover */}
+            <div className="p-2 bg-white border rounded shadow-sm">
+              <p className="text-xs text-gray-500 font-semibold">COVER</p>
+              <p className="font-medium text-gray-800">{item.data?.coverType || "—"}</p>
+            </div>
+
+            {/* Inner Pages */}
+            <div className="p-2 bg-white border rounded shadow-sm">
+              <p className="text-xs text-gray-500 font-semibold">INNER PAGES</p>
+              <p className="font-medium text-gray-800">{item.data?.innerPage || "—"}</p>
+            </div>
+
+            {/* Description */}
+            <div className="p-2 bg-white border rounded shadow-sm col-span-1 sm:col-span-2">
+              <p className="text-xs text-gray-500 font-semibold">DESCRIPTION</p>
+              <p className="font-medium text-gray-800">{item.data?.description || "—"}</p>
+            </div>
+          </>
+        )}
+
+        {item.type === "cover" && (
+          <>
+            {/* Size */}
+            <div className="p-2 bg-white border rounded shadow-sm">
+              <p className="text-xs text-gray-500 font-semibold">SIZE</p>
+              <p className="font-medium text-gray-800">{item.data?.size || "—"}</p>
+            </div>
+
+            {/* Quantity */}
+            <div className="p-2 bg-white border rounded shadow-sm">
+              <p className="text-xs text-gray-500 font-semibold">QUANTITY</p>
+              <p className="font-medium text-gray-800">{item.data?.quantity || "—"}</p>
+            </div>
+
+            {/* Title */}
+            <div className="p-2 bg-white border rounded shadow-sm">
+              <p className="text-xs text-gray-500 font-semibold">TITLE</p>
+              <p className="font-medium text-gray-800">{item.data?.title || "—"}</p>
+            </div>
+
+            {/* Cover Type */}
+            <div className="p-2 bg-white border rounded shadow-sm">
+              <p className="text-xs text-gray-500 font-semibold">COVER TYPE</p>
+              <p className="font-medium text-gray-800">{item.data?.coverType || "—"}</p>
+            </div>
+
+            {/* Description */}
+            <div className="p-2 bg-white border rounded shadow-sm col-span-1 sm:col-span-2">
+              <p className="text-xs text-gray-500 font-semibold">DESCRIPTION</p>
+              <p className="font-medium text-gray-800">{item.data?.description || "—"}</p>
+            </div>
+          </>
+        )}
+
+        {item.type === "other" && (
+          <>
+            {/* Size */}
+            <div className="p-2 bg-white border rounded shadow-sm">
+              <p className="text-xs text-gray-500 font-semibold">SIZE</p>
+              <p className="font-medium text-gray-800">{item.data?.size || "—"}</p>
+            </div>
+
+            {/* Quantity */}
+            <div className="p-2 bg-white border rounded shadow-sm">
+              <p className="text-xs text-gray-500 font-semibold">QUANTITY</p>
+              <p className="font-medium text-gray-800">{item.data?.quantity || "—"}</p>
+            </div>
+
+            {/* Title */}
+            <div className="p-2 bg-white border rounded shadow-sm">
+              <p className="text-xs text-gray-500 font-semibold">TITLE</p>
+              <p className="font-medium text-gray-800">{item.data?.title || "—"}</p>
+            </div>
+
+            {/* Other Type */}
+            <div className="p-2 bg-white border rounded shadow-sm">
+              <p className="text-xs text-gray-500 font-semibold">OTHER TYPE</p>
+              <p className="font-medium text-gray-800">{item.data?.otherCoverType || "—"}</p>
+            </div>
+
+            {/* Description */}
+            <div className="p-2 bg-white border rounded shadow-sm col-span-1 sm:col-span-2">
+              <p className="text-xs text-gray-500 font-semibold">DESCRIPTION</p>
+              <p className="font-medium text-gray-800">{item.data?.description || "—"}</p>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  ))}
+</div>
 
             {/* Buttons */}
             <div className="flex gap-2 mt-4">
