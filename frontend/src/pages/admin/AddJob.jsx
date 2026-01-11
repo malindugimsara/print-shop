@@ -9,6 +9,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
+
 export default function AddJob() {
 
  
@@ -127,6 +128,7 @@ export default function AddJob() {
 
         {/* Customer Section */}
         <CustomerInfo customer={customer} setCustomer={setCustomer} />
+       
 
         
         {/* RENDER ITEM LIST (TABS) */}

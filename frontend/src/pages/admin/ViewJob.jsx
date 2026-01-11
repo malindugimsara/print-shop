@@ -30,7 +30,12 @@ export default function ViewJob() {
           headers: { Authorization: "Bearer " + localStorage.getItem("token") },
         })
         .then((response) => {
-          setJob(response.data);
+          // ✅ NEW JOBS FIRST
+          const sortedJobs = response.data.sort(
+            (a, b) => new Date(b.jobDate) - new Date(a.jobDate)
+          );
+
+          setJob(sortedJobs);
           setLoaded(true);
         })
         .catch(() => {

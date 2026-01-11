@@ -15,6 +15,8 @@ import AddJob from "./admin/AddJob.jsx";
 import EditJob from "./admin/EditJob.jsx";
 import JobReportPage from "./admin/JobReportPage.jsx";
 import ViewJob from "./admin/ViewJob.jsx";
+import CustomerInfo from "./admin/AddJob/CustomerInfo.jsx";
+import AddCustomer from "./admin/AddJob/AddCustomer.jsx";
 
 export default function AdminPage() {
   const location = useLocation();
@@ -104,6 +106,7 @@ export default function AdminPage() {
             {/* Navigation */}
             <nav className="flex-1 space-y-3">
               <SidebarLink to="/admin/" icon={<FiHome />} label="Home" path={path} />
+              <SidebarLink to="/admin/addcustomer" icon={<CiSquarePlus />} label="Add Customer" path={path} />
               <SidebarLink to="/admin/addjob" icon={<CiSquarePlus />} label="Add Jobs" path={path} />
               <SidebarLink to="/admin/viewjob" icon={<FiPrinter />} label="View Jobs" path={path} />
               <SidebarLink to="/admin/users" icon={<FaUsers />} label="User" path={path} />
@@ -145,6 +148,7 @@ export default function AdminPage() {
               <Route path="/createaccount" element={<CreateAdminAccount />} />
               <Route path="/edituser" element={<EditUser />} />
               <Route path="/editjob/:jobId" element={<EditJob />} />
+              <Route path="/addcustomer" element={<AddCustomer />} />
             </Routes>
           </div>
         </>
