@@ -33,7 +33,6 @@ This system replaces manual workflows with an efficient, secure, and user-friend
 
 ### 👥 User Roles
 - **Admin Dashboard**
-- **Customer Dashboard**
 
 ### 🔐 Security
 - Secure authentication & authorization  
@@ -43,17 +42,8 @@ This system replaces manual workflows with an efficient, secure, and user-friend
 - View & manage all print jobs  
 - Reporting and analytics  
 - Print job details  
-- Monitor job status  
-
-### 👤 Customer Features
-- Add new print jobs  
-- Track job status in real time  
-- Mobile-friendly interface  
-
-### 📱 UI/UX
-- Fully responsive design  
-- Optimized for desktop and mobile devices  
-
+- Monitor job status
+  
 ---
 
 ## 🌟 Special Highlight
@@ -63,12 +53,5 @@ This system replaces manual workflows with an efficient, secure, and user-friend
 ✅ Improved operational efficiency and customer satisfaction  
 
 ---
-
-## 🛠️ Installation & Setup
-
-### 1️⃣ Clone the repository
-```bash
-git clone https://github.com/your-username/printshop-management-system.git
-cd printshop-management-system
 
 
