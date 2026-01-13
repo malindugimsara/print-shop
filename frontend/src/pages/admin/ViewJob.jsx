@@ -23,27 +23,27 @@ export default function ViewJob() {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!loaded) {
-      axios
-        .get(import.meta.env.VITE_BACKEND_URL + "/api/job", {
-          headers: { Authorization: "Bearer " + localStorage.getItem("token") },
-        })
-        .then((response) => {
-          // ✅ NEW JOBS FIRST
-          const sortedJobs = response.data.sort(
-            (a, b) => new Date(b.jobDate) - new Date(a.jobDate)
-          );
+ useEffect(() => {
+  if (!loaded) {
+    axios
+      .get(import.meta.env.VITE_BACKEND_URL + "/api/job", {
+        headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+      })
+      .then((response) => {
+        const sortedJobs = response.data.sort(
+          (a, b) => b._id.localeCompare(a._id)
+        );
 
-          setJob(sortedJobs);
-          setLoaded(true);
-        })
-        .catch(() => {
-          toast.error("Failed to fetch Job");
-          setLoaded(true);
-        });
-    }
-  }, [loaded]);
+        setJob(sortedJobs);
+        setLoaded(true);
+      })
+      .catch(() => {
+        toast.error("Failed to fetch Job");
+        setLoaded(true);
+      });
+  }
+}, [loaded]);
+
 
   // Delete Job
   async function deletejob(jobID) {
