@@ -66,33 +66,51 @@ return (
         />
 
         {/* Job Summary Cards */}
-        <div className="flex flex-wrap justify-center gap-6 mt-8 w-full max-w-3xl">
-            {loading ? (
-                <div className="w-full flex justify-center items-center">
-                    <VscLoading className="text-4xl animate-spin text-blue-500" />
-                </div>
-            ) : (
-                <>
-                    <div className="bg-gradient-to-br from-red-500 to-red-600 text-white p-6 rounded-lg shadow-lg w-48 text-center hover:shadow-xl transition-shadow">
-                        <FaHourglassEnd className="text-4xl mx-auto mb-3" />
-                        <h2 className="text-xl font-bold">Pending</h2>
-                        <p className="text-4xl font-bold mt-3">{summary.Pending}</p>
-                    </div>
+        <div className="flex flex-wrap justify-center gap-6 mt-10 w-full max-w-4xl">
+  {loading ? (
+    <div className="w-full flex justify-center items-center py-10">
+      <VscLoading className="text-5xl animate-spin text-blue-400" />
+    </div>
+  ) : (
+    <>
+      {/* Pending */}
+      <div className="w-52 p-6 text-white text-center rounded-2xl
+                      bg-gradient-to-br from-red-300 to-red-700
+                      hover:scale-105 hover:shadow-2xl">
+        <FaHourglassEnd className="text-4xl mx-auto mb-3 opacity-90" />
+        <h2 className="text-lg font-semibold tracking-wide">Pending</h2>
+        <p className="text-4xl font-extrabold mt-2">
+          {summary.Pending}
+        </p>
+      </div>
 
-                    <div className="bg-gradient-to-br from-yellow-500 to-yellow-600 text-white p-6 rounded-lg shadow-lg w-48 text-center hover:shadow-xl transition-shadow">
-                        <FaSpinner className="text-4xl mx-auto mb-3" />
-                        <h2 className="text-xl font-bold">In Progress</h2>
-                        <p className="text-4xl font-bold mt-3">{summary["In Progress"]}</p>
-                    </div>
+      {/* In Progress */}
+      <div className="w-52 p-6 text-white text-center rounded-2xl
+                      bg-gradient-to-br from-yellow-700 to-yellow-200
+                      shadow-lg transition-all duration-300
+                      hover:scale-105 hover:shadow-2xl">
+        <FaSpinner className="text-4xl mx-auto mb-3 opacity-90 animate-spin" />
+        <h2 className="text-lg font-semibold tracking-wide">In Progress</h2>
+        <p className="text-4xl font-extrabold mt-2">
+          {summary['In Progress']}
+        </p>
+      </div>
 
-                    <div className="bg-gradient-to-br from-green-500 to-green-600 text-white p-6 rounded-lg shadow-lg w-48 text-center hover:shadow-xl transition-shadow">
-                        <FaCheckCircle className="text-4xl mx-auto mb-3" />
-                        <h2 className="text-xl font-bold">Completed</h2>
-                        <p className="text-4xl font-bold mt-3">{summary.Completed}</p>
-                    </div>
-                </>
-            )}
-        </div>
+      {/* Completed */}
+      <div className="w-52 p-6 text-white text-center rounded-2xl
+                      bg-gradient-to-br from-green-300 to-green-700
+                      shadow-lg transition-all duration-300
+                      hover:scale-105 hover:shadow-2xl">
+        <FaCheckCircle className="text-4xl mx-auto mb-3 opacity-90" />
+        <h2 className="text-lg font-semibold tracking-wide">Completed</h2>
+        <p className="text-4xl font-extrabold mt-2">
+          {summary.Completed}
+        </p>
+      </div>
+    </>
+  )}
+</div>
+
     </div>
 );
 }
